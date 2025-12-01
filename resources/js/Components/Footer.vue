@@ -55,10 +55,6 @@
                         <i class="fab fa-facebook fa-lg"></i>
                         <span class="sr-only">Facebook</span>
                     </a>
-                    <a href="https://www.x.com" target="_blank" class="text-gray-400 hover:text-[#F5F570] transition-colors">
-                        <i class="fab fa-twitter fa-lg"></i>
-                        <span class="sr-only">Twitter</span>
-                    </a>
                 </div>
             </div>
         </div>

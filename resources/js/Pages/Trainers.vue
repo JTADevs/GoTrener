@@ -42,19 +42,19 @@
                             <span
                                 v-for="cat in trainer.category"
                                 :key="cat"
-                                class="text-xs bg-yellow-400 text-gray-800 rounded-full px-3 py-1 font-semibold"
+                                class="text-xs bg-[#F5F570] text-gray-800 rounded-full px-3 py-1 font-semibold"
                             >
                                 {{ cat }}
                             </span>
                         </div>
-                        <div class="flex text-yellow-400 text-lg my-2">
+                        <div class="flex text-yellow-400 text-lg mt-auto">
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-regular fa-star"></i>
                         </div>
-                        <button class="mt-4 px-6 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors duration-300">
+                        <button class="mt-4 px-6 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 cursor-pointer">
                             Zobacz profil
                         </button>
                     </div>
@@ -64,7 +64,7 @@
                     <button 
                         v-if="trainers.prevPage"
                         @click.stop="goTo(trainers.prevPage)"
-                        class="px-5 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors duration-300 disabled:opacity-50"
+                        class="px-5 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 disabled:opacity-50 cursor-pointer"
                         :disabled="!trainers.prevPage"
                     >
                         <i class="fa-solid fa-arrow-left mr-2"></i> Poprzednia
@@ -73,7 +73,7 @@
                     <button 
                         v-if="trainers.nextPage"
                         @click.stop="goTo(trainers.nextPage)"
-                        class="px-5 py-2 bg-gray-800 text-white font-semibold rounded-full hover:bg-gray-700 transition-colors duration-300 disabled:opacity-50"
+                        class="px-5 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 disabled:opacity-50 cursor-pointer"
                         :disabled="!trainers.nextPage"
                     >
                         Następna <i class="fa-solid fa-arrow-right ml-2"></i>
