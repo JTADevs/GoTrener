@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\UserController;
 use App\Http\Middleware\EnsureUserIsLogged;
 use Inertia\Inertia;
@@ -15,6 +16,8 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/confirm_account', [AuthController::class, 'confirm_account']);
 Route::get('/logout', [AuthController::class, 'logout']);
+
+Route::get('/trainers', [TrainerController::class, 'index']);
 
 Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/profil', [UserController::class, 'dashboard'])->name('profile');

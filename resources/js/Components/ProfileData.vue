@@ -1,8 +1,11 @@
 <script setup>
 import { computed } from 'vue';
 import { Form, useForm } from '@inertiajs/vue3';
+import { categories } from '../Data/categories.js';
 
-const { user } = defineProps({ user: Object });
+const { user } = defineProps({ 
+    user: Object,
+});
 
 const form = useForm({
     name: user.name ?? '',
@@ -12,7 +15,11 @@ const form = useForm({
     city: user.city ?? '',
     gender: user.gender ?? '',
     imageURL: user.imageURL ?? '',
-    image: null    
+    image: null,
+    facebook: user.facebook ?? '',
+    instagram: user.instagram ?? '',
+    website: user.website ?? '',
+    category: user.category ?? [],    
 });
 
 const scoreForm = useForm({
@@ -66,92 +73,150 @@ const handleImage = (e) => {
     if (!file) return;
 
     form.image = file;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        form.imageURL = e.target.result;
+    };
+    reader.readAsDataURL(file);
 };
 </script>
 
-
 <template>
-    <div class="min-w-[300px] max-w-[800px] flex flex-col">
+    <div>
+        <header class="bg-[#241F20] text-white p-4">
+            <h1 class="text-2xl font-bold text-[#F5F570]">Witaj, {{ user.name }}</h1>
+            <p class="text-gray-300">Zarządzaj informacjami o swoim profilu i śledź postępy.</p>
+        </header>
 
-        <h1 class="font-bold text-2xl bg-[#241F20] text-[#F5F570] p-3">
-            Witaj, {{ user.name }}
-        </h1>
+        <div class="p-6 space-y-8">
+            <!-- Personal Data Form -->
+            <Form @submit.prevent="form.post('/profil/update', { forceFormData: true })" class="space-y-6">
+                <fieldset class="p-6 border border-gray-200 rounded-lg">
+                    <legend class="px-2 text-lg font-semibold text-gray-700">Dane Osobowe</legend>
+                    
+                    <div class="flex flex-col items-center mb-6">
+                        <img :src="form.imageURL || '/images/no_user.png'" class="w-32 h-32 object-cover rounded-full border-4 border-gray-200 shadow-md">
+                        <label for="image-upload" class="mt-4 px-4 py-2 bg-gray-700 text-white text-sm font-medium rounded-lg cursor-pointer hover:bg-gray-600">
+                            Zmień zdjęcie
+                        </label>
+                        <input id="image-upload" type="file" @change="handleImage" class="hidden">
+                    </div>
 
-        <h2 class="font-bold text-xl p-3">Twoje dane osobowe:</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Imię i nazwisko</label>
+                            <input type="text" id="name" v-model="form.name" placeholder="Imię i nazwisko" class="form-input  border-1 p-1 rounded-xl text-center">
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                            <input type="email" id="email" v-model="form.email" placeholder="adres@email.com" class="form-input border-1 p-1 rounded-xl text-center" readonly>
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Numer telefonu</label>
+                            <input type="text" id="phone" v-model="form.phone" placeholder="Numer telefonu" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-700 mb-1">Adres</label>
+                            <input type="text" id="address" v-model="form.address" placeholder="Adres" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                        <div>
+                            <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Miasto</label>
+                            <input type="text" id="city" v-model="form.city" placeholder="Miasto" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Płeć</label>
+                            <div class="flex items-center space-x-4">
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" v-model="form.gender" value="men" class="form-radio">
+                                    <span class="ml-2">Mężczyzna</span>
+                                </label>
+                                <label class="flex items-center">
+                                    <input type="radio" name="gender" v-model="form.gender" value="women" class="form-radio">
+                                    <span class="ml-2">Kobieta</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-        <Form @submit.prevent="form.post('/profil/update', { forceFormData: true })" class="flex flex-col *:my-2 *:p-2 p-3">
-            <img :src="form.imageURL || '/images/no_user.png'" class="w-[200px] h-[200px] object-cover rounded-full mx-auto">
-            <input type="file" @change="handleImage" class="border-1 rounded-xl">
-            <input type="text" v-model="form.name" placeholder="Imię i nazwisko" class="border-1 rounded-xl">
-            <input type="text" v-model="form.phone" placeholder="Numer telefonu" class="border-1 rounded-xl">
-            <input type="text" v-model="form.address" placeholder="Adres" class="border-1 rounded-xl">
-            <input type="text" v-model="form.city" placeholder="Miasto" class="border-1 rounded-xl">
-            <div>
-                <b>Płeć: </b>
-                <input type="radio" name="gender" v-model="form.gender" value="men"> Mężczyzna
-                <input type="radio" name="gender" v-model="form.gender" value="women"> Kobieta
-            </div>
-            <button type="submit" class="w-[300px] mx-auto font-bold bg-[#241F20] text-[#F5F570] cursor-pointer border-0">Zapisz</button>
-        </Form>
+                    <!-- Trainer-specific fields -->
+                    <div v-if="user.role === 'trainer'" class="mt-8 pt-6 border-t border-gray-200">
+                        <h3 class="text-md font-semibold text-gray-700 mb-4">Ustawienia Trenera</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" v-model="form.facebook" placeholder="Link do Facebooka" class="form-input border-1 p-1 rounded-xl text-center">
+                            <input type="text" v-model="form.instagram" placeholder="Link do Instagrama" class="form-input border-1 p-1 rounded-xl text-center">
+                            <input type="text" v-model="form.website" placeholder="Link do strony WWW" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                        <h4 class="font-semibold text-gray-600 mt-6 mb-2">Twoje specjalizacje:</h4>
+                        <div class="border rounded-lg p-4 max-h-60 overflow-y-auto bg-gray-50 grid grid-cols-2 sm:grid-cols-3 gap-3">
+                            <div v-for="cat in categories" :key="cat" class="flex items-center">
+                                <input type="checkbox" :id="`cat-${cat}`" :value="cat" v-model="form.category" class="form-checkbox">
+                                <label :for="`cat-${cat}`" class="ml-2 text-sm cursor-pointer">{{ cat }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">Zapisz Dane Osobowe</button>
+            </Form>
 
-        <h2 class="font-bold text-xl p-3">Twoja aktualna forma:</h2>
+            <!-- Body Measurements Form -->
+            <Form @submit.prevent="scoreForm.put('/profil/updateScore')" class="space-y-6">
+                <fieldset class="p-6 border border-gray-200 rounded-lg">
+                    <legend class="px-2 text-lg font-semibold text-gray-700">Pomiary Ciała</legend>
+                    
+                    <div class="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
+                        <h3 class="font-bold text-gray-800">Twoje BMI: 
+                            <span v-if="!BMI" class="text-red-500 font-normal">Uzupełnij wagę i wzrost, aby obliczyć.</span>
+                            <span v-else :class="BMIcolor" class="font-extrabold">{{ BMI }} ({{ BMIcategory }})</span>
+                        </h3>
+                    </div>
 
-        <p class="font-bold p-3">BMI: 
-            <b v-if="!scoreForm.weight || !scoreForm.height" class="text-red-500">Uzupełnij wagę i wzrost aby obliczyć BMI</b>
-            <b v-if="scoreForm.weight && scoreForm.height" :class="BMIcolor">{{ BMI }} {{ BMIcategory }}</b>
-        </p>
-
-        <Form @submit.prevent="scoreForm.put('/profil/updateScore')" class="flex flex-col *:p-2 *:rounded-xl">
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Waga [KG]</label>
-                <input type="text" v-model="scoreForm.weight" placeholder="Waga [KG]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Wzrost [CM]</label>
-                <input type="text" v-model="scoreForm.height" placeholder="Wzrost [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód szyi [CM]</label>
-                <input type="text" v-model="scoreForm.neckCircumference" placeholder="Obwód szyi [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód klatki piersiowej [CM]</label>
-                <input type="text" v-model="scoreForm.chestCircumference" placeholder="Obwód klatki piersiowej [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód talii [CM]</label>
-                <input type="text" v-model="scoreForm.waistCircumference" placeholder="Obwód talii [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód brzucha [CM]</label>
-                <input type="text" v-model="scoreForm.abdomenCircumference" placeholder="Obwód brzucha [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód bioder [CM]</label>
-                <input type="text" v-model="scoreForm.hipCircumference" placeholder="Obwód bioder [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód bicepsa [CM]</label>
-                <input type="text" v-model="scoreForm.bicepsCircumference" placeholder="Obwód bicepsa [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód nadgarstka [CM]</label>
-                <input type="text" v-model="scoreForm.wristCircumference" placeholder="Obwód nadgarstka [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód uda [CM]</label>
-                <input type="text" v-model="scoreForm.thighCircumference" placeholder="Obwód uda [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód łydki [CM]</label>
-                <input type="text" v-model="scoreForm.calfCircumference" placeholder="Obwód łydki [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            <div class="flex flex-row *:w-[50%] items-center">
-                <label>Obwód kostki [CM]</label>
-                <input type="text" v-model="scoreForm.ankleCircumference" placeholder="Obwód kostki [CM]" class="border-1 mx-2 my-2 p-2 rounded-xl"></input>
-            </div>
-            
-            <button type="submit" class="w-[300px] mx-auto font-bold bg-[#241F20] text-[#F5F570] cursor-pointer border-0">Zapisz</button>
-        </Form>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="(label, key) in { weight: 'Waga [kg]', height: 'Wzrost [cm]', neckCircumference: 'Obwód szyi [cm]', chestCircumference: 'Obwód klatki [cm]', waistCircumference: 'Obwód talii [cm]', abdomenCircumference: 'Obwód brzucha [cm]', hipCircumference: 'Obwód bioder [cm]', bicepsCircumference: 'Obwód bicepsa [cm]', wristCircumference: 'Obwód nadgarstka [cm]', thighCircumference: 'Obwód uda [cm]', calfCircumference: 'Obwód łydki [cm]', ankleCircumference: 'Obwód kostki [cm]' }" :key="key">
+                            <label :for="key" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
+                            <input type="text" :id="key" v-model="scoreForm[key]" :placeholder="label" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">Zapisz Pomiary</button>
+            </Form>
+        </div>
     </div>
 </template>
+
+<style lang="postcss" scoped>
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(245, 245, 112, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(245, 245, 112, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(245, 245, 112, 0);
+  }
+}
+
+.form-input {
+    @apply w-full border-gray-300 rounded-lg shadow-sm focus:border-yellow-500 focus:ring-yellow-500;
+}
+.form-radio {
+    @apply text-yellow-600 focus:ring-yellow-500;
+}
+.form-checkbox {
+    @apply appearance-none h-5 w-5 align-middle border-2 border-gray-400 rounded-md cursor-pointer;
+    @apply focus:outline-none;
+    transition: background-color 0.2s;
+}
+.form-checkbox:checked {
+    background-color: #F5F570;
+    border-color: #d8d860; /* Darker yellow for contrast */
+    background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z' fill='%23241F20'/%3e%3c/svg%3e");
+    background-position: center;
+    background-size: 110%;
+    background-repeat: no-repeat;
+}
+.form-checkbox:focus {
+    animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+</style>

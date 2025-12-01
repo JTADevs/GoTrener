@@ -49,8 +49,12 @@ class User implements UserInterface
                 'address' => $data['address'],
                 'city' => $data['city'],
                 'gender' => $data['gender'],
-                'imageURL' => $data['imageURL'] ?? null    
-            ], ['merge' => true]);
+                'imageURL' => $data['imageURL'] ?? null,
+                'facebook' => $data['facebook'],
+                'instagram' => $data['instagram'],
+                'website' => $data['website'],
+                'category' => $data['category'] ?? [],    
+            ], ['merge' => true]); 
         return true;
     }
 

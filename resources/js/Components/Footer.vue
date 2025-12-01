@@ -3,22 +3,63 @@
 </script>
 
 <template>
-    <footer class="h-[120px] w-full bg-[#241F20] flex flex-col justify-center *:my-3 py-5">
-        <div class="w-[80%] mx-auto">
-            <h1 class="text-white font-bold text-[20px]">DOŁĄCZ DO SPOŁECZNOŚCI <span class="text-[#F5F570]">GO_</span>TRENER!</h1>
-        </div>
-        <div class="w-[80%] mx-auto flex flex-row justify-between *:text-white">
-            <div>
-                <Link href="/" class="bg-[#F5F570] font-bold text-[#241F20] p-2 rounded-2xl mr-5">ZNAJDŹ TRENERA</Link>
-                <Link href="/" class="bg-[#352B2C] font-bold p-2 rounded-2xl">ZOSTAŃ TRENEREM</Link>
+    <footer class="bg-[#241F20] text-gray-300">
+        <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                
+                <!-- Branding Section -->
+                <div class="md:col-span-1 lg:col-span-2">
+                    <Link href="/" class="flex items-center">
+                        <img src="../../../public/images/weightlifting.png" alt="logo" class="h-10 w-auto">
+                        <span class="ml-3 text-xl font-bold">
+                            <span class="text-[#F5F570]">GO_</span><span class="text-white">TRENER</span>
+                        </span>
+                    </Link>
+                    <p class="mt-4 text-sm max-w-xs">
+                        Dołącz do naszej społeczności i znajdź idealnego trenera lub rozwiń swoją karierę jako profesjonalista.
+                    </p>
+                </div>
+
+                <!-- Navigation -->
+                <div>
+                    <h3 class="text-sm font-semibold tracking-wider uppercase text-white">Nawigacja</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><Link href="/" class="hover:text-white transition-colors">O nas</Link></li>
+                        <li><Link href="/trainers" class="hover:text-white transition-colors">Znajdź trenera</Link></li>
+                        <li><Link href="/" class="hover:text-white transition-colors">Dla Trenerów</Link></li>
+                        <li><Link href="/" class="hover:text-white transition-colors">Kontakt</Link></li>
+                    </ul>
+                </div>
+
+                <!-- Legal -->
+                <div>
+                    <h3 class="text-sm font-semibold tracking-wider uppercase text-white">Prawne</h3>
+                    <ul class="mt-4 space-y-2">
+                        <li><Link href="/" class="hover:text-white transition-colors">Polityka Prywatności</Link></li>
+                        <li><Link href="/" class="hover:text-white transition-colors">Regulamin</Link></li>
+                    </ul>
+                </div>
+
             </div>
-            <div class="*:mx-5">
-                <Link href="/">O nas</Link>
-                <Link href="/">Kontakt</Link>
-                <Link href="/">Polityka Prywatności</Link>
-                <a href="https://www.instagram.com" target="_blank" class="text-white hover:text-[#F5F570]">
-                    <i class="fab fa-instagram fa-lg"></i>
-                </a>
+
+            <div class="mt-8 border-t border-gray-700 pt-8 flex flex-col md:flex-row items-center justify-between">
+                <p class="text-sm text-gray-400 md:order-1">
+                    &copy; {{ new Date().getFullYear() }} GO_TRENER. Wszelkie prawa zastrzeżone.
+                </p>
+                <div class="flex items-center space-x-6 md:order-2 mt-4 md:mt-0">
+                    <a href="https://www.instagram.com" target="_blank" class="text-gray-400 hover:text-[#F5F570] transition-colors">
+                        <i class="fab fa-instagram fa-lg"></i>
+                        <span class="sr-only">Instagram</span>
+                    </a>
+                    <a href="https://www.facebook.com" target="_blank" class="text-gray-400 hover:text-[#F5F570] transition-colors">
+                        <i class="fab fa-facebook fa-lg"></i>
+                        <span class="sr-only">Facebook</span>
+                    </a>
+                    <a href="https://www.x.com" target="_blank" class="text-gray-400 hover:text-[#F5F570] transition-colors">
+                        <i class="fab fa-twitter fa-lg"></i>
+                        <span class="sr-only">Twitter</span>
+                    </a>
+                </div>
             </div>
         </div>
     </footer>

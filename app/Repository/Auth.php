@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Mail\AccountVerification;
 use Illuminate\Support\Facades\Http;
 use App\Services\FirebaseService;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
