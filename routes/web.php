@@ -18,9 +18,11 @@ Route::get('/confirm_account', [AuthController::class, 'confirm_account']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
 Route::get('/trainers', [TrainerController::class, 'index']);
+Route::get('/trainer/{id}', [TrainerController::class, 'show']);
 
 Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/profil', [UserController::class, 'dashboard'])->name('profile');
     Route::post('/profil/update', [UserController::class, 'update']);
     Route::put('/profil/updateScore', [UserController::class, 'updateScore']);
+    Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

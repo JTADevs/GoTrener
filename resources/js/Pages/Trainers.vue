@@ -1,6 +1,6 @@
 <script setup>
     import Layout from '@/Layouts/Layout.vue';
-    import { router } from '@inertiajs/vue3';
+    import { Link, router } from '@inertiajs/vue3';
 
     const { trainers } = defineProps({
         trainers: Object,
@@ -54,9 +54,9 @@
                             <i class="fa-solid fa-star"></i>
                             <i class="fa-regular fa-star"></i>
                         </div>
-                        <button class="mt-4 px-6 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 cursor-pointer">
+                        <Link :href="`/trainer/${trainer.uid}`" class="mt-4 px-6 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 cursor-pointer">
                             Zobacz profil
-                        </button>
+                        </Link>
                     </div>
                 </div>
 

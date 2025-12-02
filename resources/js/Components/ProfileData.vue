@@ -19,6 +19,9 @@ const form = useForm({
     facebook: user.facebook ?? '',
     instagram: user.instagram ?? '',
     website: user.website ?? '',
+    tiktok: user.tiktok ?? '',
+    youtube: user.youtube ?? '',
+    bio: user.bio ?? '',
     category: user.category ?? [],    
 });
 
@@ -137,6 +140,12 @@ const handleImage = (e) => {
                                 </label>
                             </div>
                         </div>
+                        
+                    </div>
+
+                    <div v-if="user.role === 'trainer'" class="mt-4 w-[100%]">
+                        <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">Opis</label>
+                        <textarea id="bio" v-model="form.bio" placeholder="Napisz coś o sobie..." class="form-input border-1 p-1 rounded-xl text-center h-24 w-[100%]"></textarea>
                     </div>
 
                     <!-- Trainer-specific fields -->
@@ -146,6 +155,8 @@ const handleImage = (e) => {
                             <input type="text" v-model="form.facebook" placeholder="Link do Facebooka" class="form-input border-1 p-1 rounded-xl text-center">
                             <input type="text" v-model="form.instagram" placeholder="Link do Instagrama" class="form-input border-1 p-1 rounded-xl text-center">
                             <input type="text" v-model="form.website" placeholder="Link do strony WWW" class="form-input border-1 p-1 rounded-xl text-center">
+                            <input type="text" v-model="form.tiktok" placeholder="TikTok" class="form-input border-1 p-1 rounded-xl text-center">
+                            <input type="text" v-model="form.youtube" placeholder="Youtube" class="form-input border-1 p-1 rounded-xl text-center">
                         </div>
                         <h4 class="font-semibold text-gray-600 mt-6 mb-2">Twoje specjalizacje:</h4>
                         <div class="border rounded-lg p-4 max-h-60 overflow-y-auto bg-gray-50 grid grid-cols-2 sm:grid-cols-3 gap-3">

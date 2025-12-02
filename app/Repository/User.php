@@ -53,6 +53,9 @@ class User implements UserInterface
                 'facebook' => $data['facebook'],
                 'instagram' => $data['instagram'],
                 'website' => $data['website'],
+                'tiktok' => $data['tiktok'] ?? '',
+                'youtube' => $data['youtube'] ?? '',
+                'bio' => $data['bio'] ?? '',
                 'category' => $data['category'] ?? [],    
             ], ['merge' => true]); 
         return true;

@@ -64,4 +64,55 @@ class Trainer implements TrainerInterface
         ];
     }
 
+    public function getTrainer(string $uid)
+    {
+        $trainer = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->snapshot()
+            ->data();
+
+        $reviews = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->collection('reviews')
+            ->documents()
+            ->rows();
+
+        foreach($reviews as $review){
+            $reviewData[] = $review->data();
+        }
+        
+        $trainer = array_merge($trainer, ['uid' => $uid], ['reviews' => $reviewData]);
+        // dd($trainer);
+        return $trainer;
+    }
+
+    public function submitReview(string $trainerId, array $data)
+    {
+        $userName = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->snapshot()
+            ->data()['name'] ?? 'Anonymous';
+
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($trainerId)
+            ->collection('reviews')
+            ->document(session('loggedUser.uid'))
+            ->set([
+                'userId' => session('loggedUser.uid'),
+                'rating' => $data['rating'],
+                'comment' => $data['comment'],
+                'userName' => $userName,
+                'created_at' => now(),
+            ]);
+        return true;
+    }
+
 }

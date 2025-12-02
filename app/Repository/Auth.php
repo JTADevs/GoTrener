@@ -50,6 +50,7 @@ class Auth implements AuthInterface
             'uid'   => $loginData['localId'],
             'email' => $loginData['email'],
             'name'  => $userData['name'] ?? null,
+            'role'  => $userData['role'] ?? 'client',
         ];
     }
 
