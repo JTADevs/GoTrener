@@ -18,13 +18,18 @@ class TrainerController extends Controller
 
     public function index(Request $request)
     {
-        $trainers = $this->trainer->getAllTrainers([
+        $filters = [
             'page' => $request->get('page', 1),
             'perPage' => 6,
-        ]);
+            'fullname' => $request->get('fullname'),
+            'category' => $request->get('category'),
+        ];
+
+        $trainers = $this->trainer->getAllTrainers($filters);
 
         return Inertia::render('Trainers', [
-            'trainers' => $trainers
+            'trainers' => $trainers,
+            'filters' => $filters,
         ]);
     }
     

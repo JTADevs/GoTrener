@@ -19,48 +19,94 @@ class Trainer implements TrainerInterface
     {
         $page = $filters['page'] ?? 1;
         $perPage = $filters['perPage'] ?? 10;
+        $fullname = trim($filters['fullname'] ?? '');
+        $category = trim($filters['category'] ?? '');
 
-        $collection = $this->firebase->firestore()
+        $baseQuery = $this->firebase->firestore()
             ->database()
             ->collection('users')
-            ->where('role', '=', 'trainer')
-            ->limit($perPage);
+            ->where('role', '=', 'trainer');
 
-        if ($page > 1) {
-            $skipDocs = $this->firebase->firestore()
-                ->database()
-                ->collection('users')
-                ->where('role', '=', 'trainer')
-                ->limit(($page - 1) * $perPage)
-                ->documents();
+        $baseQuery = $baseQuery->orderBy('__name__');
 
-            $last = null;
-            foreach ($skipDocs as $d) {
-                $last = $d;
-            }
-
-            if ($last) {
-                $collection = $collection->startAfter($last);
-            }
-        }
-
-        $docs = $collection->documents();
-
-        $trainers = [];
+        $docs = $baseQuery->documents();
+        
+        $allTrainers = [];
         foreach ($docs as $doc) {
             if ($doc->exists()) {
-                $trainers[] = array_merge($doc->data(), [
-                    'uid' => $doc->id(),
-                ]);
+                $allTrainers[] = array_merge($doc->data(), ['uid' => $doc->id()]);
             }
         }
 
+        $isSearching = !empty($fullname) || !empty($category);
+
+        if ($isSearching) {
+            $filteredTrainers = array_filter($allTrainers, function($trainer) use ($fullname, $category) {
+                $nameMatches = true;
+                $categoryMatches = true;
+                
+                if (!empty($fullname)) {
+                    $name = strtolower($trainer['name'] ?? '');
+                    $nameMatches = str_contains($name, strtolower($fullname));
+                }
+
+                if (!empty($category)) {
+                    $trainerCategories = array_map('strtolower', $trainer['category'] ?? []);
+                    $searchCategory = strtolower($category);
+                    
+                    $categoryMatches = false;
+                    foreach ($trainerCategories as $cat) {
+                        if (str_contains($cat, $searchCategory)) {
+                            $categoryMatches = true;
+                            break;
+                        }
+                    }
+                }
+                
+                return $nameMatches && $categoryMatches;
+            });
+
+            $trainers = array_values($filteredTrainers);
+        } else {
+            $trainers = array_values($allTrainers);
+        }
+
+        $totalResults = count($trainers);
+        
+        $offset = ($page - 1) * $perPage;
+        $paginatedTrainers = array_slice($trainers, $offset, $perPage);
+        
+        $paginatedTrainersWithReviews = [];
+        foreach ($paginatedTrainers as $trainer) {
+            $reviews = $this->firebase->firestore()
+                ->database()
+                ->collection('users')
+                ->document($trainer['uid'])
+                ->collection('reviews')
+                ->documents()
+                ->rows();
+        
+            $reviewData = [];
+            foreach ($reviews as $review) {
+                if ($review->exists()) {
+                    $reviewData[] = $review->data();
+                }
+            }
+            $trainer['reviews'] = $reviewData;
+            $paginatedTrainersWithReviews[] = $trainer;
+        }
+        
+        $nextPage = ($offset + $perPage) < $totalResults ? $page + 1 : null;
+        $prevPage = $page > 1 ? $page - 1 : null;
+
         return [
-            'data' => $trainers,
+            'data' => $paginatedTrainersWithReviews,
             'page' => $page,
             'perPage' => $perPage,
-            'nextPage' => count($trainers) === $perPage ? $page + 1 : null,
-            'prevPage' => $page > 1 ? $page - 1 : null,
+            'nextPage' => $nextPage,
+            'prevPage' => $prevPage,
+            'fullname' => $fullname,
+            'category' => $category,
         ];
     }
 
@@ -85,8 +131,7 @@ class Trainer implements TrainerInterface
             $reviewData[] = $review->data();
         }
         
-        $trainer = array_merge($trainer, ['uid' => $uid], ['reviews' => $reviewData]);
-        // dd($trainer);
+        $trainer = array_merge($trainer, ['uid' => $uid], ['reviews' => $reviewData ?? []]);
         return $trainer;
     }
 

@@ -1,24 +1,66 @@
 <script setup>
     import Layout from '@/Layouts/Layout.vue';
-    import { Link, router } from '@inertiajs/vue3';
+    import { Form, Link, router, useForm } from '@inertiajs/vue3';
 
-    const { trainers } = defineProps({
+    const { trainers, filters } = defineProps({
         trainers: Object,
+        filters: Object,
     });
 
+    const getAverageRating = (reviews) => {
+        if (!reviews || reviews.length === 0) {
+            return 0;
+        }
+        const total = reviews.reduce((acc, review) => acc + review.rating, 0);
+        return Math.round(total / reviews.length);
+    };
+
     const goTo = (page) => {
-        router.get('/trainers', { page }, { preserveScroll: true });
+        const currentFilters = {
+            fullname: filters.fullname,
+            category: filters.category,
+        };
+        
+        router.get('/trainers', { ...currentFilters, page }, { preserveScroll: true });
     };
 
     const goToProfile = (trainerId) => {
         router.get(`/trainer/${trainerId}`);
     };
+
+    const search = useForm({
+        fullname: filters.fullname || '',
+        category: filters.category || ''
+    });
+
+    const submitSearch = () => {
+        search.get('/trainers', { 
+            preserveState: true, 
+            replace: true,
+        });
+    }
 </script>
 
 <template>
     <Layout>
         <div class="bg-gray-50">
             <div class="max-w-[1200px] mx-auto p-4 min-h-[calc(100vh-200px)]">
+                <div class="bg-white p-8 rounded-xl shadow-lg mb-12 mt-4">
+                    <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Znajdź swojego trenera</h2>
+                    <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4">
+                        <div class="relative flex-grow w-full md:w-auto">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="fullname" v-model="search.fullname" placeholder="Imię i nazwisko" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
+                        </div>
+                        <div class="relative flex-grow w-full md:w-auto">
+                            <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="category" v-model="search.category" placeholder="Kategoria" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
+                        </div>
+                        <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-all duration-300 transform hover:scale-105 shadow-md">
+                            <i class="fa-solid fa-search mr-2"></i>Szukaj
+                        </button>
+                    </Form>
+                </div>
                 <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nasi Trenerzy</h1>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -47,12 +89,18 @@
                                 {{ cat }}
                             </span>
                         </div>
-                        <div class="flex text-yellow-400 text-lg mt-auto">
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-solid fa-star"></i>
-                            <i class="fa-regular fa-star"></i>
+                        <div class="flex text-yellow-400 text-lg mt-auto items-center">
+                            <template v-if="trainer.reviews && trainer.reviews.length > 0">
+                                <i v-for="star in 5" :key="star" class="fa-star" :class="{
+                                    'fa-solid': star <= getAverageRating(trainer.reviews),
+                                    'fa-regular': star > getAverageRating(trainer.reviews)
+                                }"></i>
+                                <span class="text-gray-600 text-sm ml-2">({{ trainer.reviews.length }})</span>
+                            </template>
+                            <template v-else>
+                                <i v-for="star in 5" :key="star" class="fa-regular fa-star"></i>
+                                <span class="text-gray-600 text-sm ml-2">(0)</span>
+                            </template>
                         </div>
                         <Link :href="`/trainer/${trainer.uid}`" class="mt-4 px-6 py-2 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-colors duration-300 cursor-pointer">
                             Zobacz profil
