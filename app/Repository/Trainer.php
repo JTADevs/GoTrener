@@ -20,7 +20,8 @@ class Trainer implements TrainerInterface
         $page = $filters['page'] ?? 1;
         $perPage = $filters['perPage'] ?? 10;
         $fullname = trim($filters['fullname'] ?? '');
-        $category = trim($filters['category'] ?? '');
+        $location = trim($filters['location'] ?? '');
+        $category = $filters['category'] ?? [];
 
         $baseQuery = $this->firebase->firestore()
             ->database()
@@ -38,13 +39,24 @@ class Trainer implements TrainerInterface
             }
         }
 
-        $isSearching = !empty($fullname) || !empty($category);
+        $isSearching = !empty($fullname) || !empty($category) || !empty($location);
 
         if ($isSearching) {
-            $filteredTrainers = array_filter($allTrainers, function($trainer) use ($fullname, $category) {
+            $filteredTrainers = array_filter($allTrainers, function($trainer) use ($fullname, $category, $location) {
                 $nameMatches = true;
                 $categoryMatches = true;
+                $locationMatches = true;
                 
+                if (!empty($fullname)) {
+                    $name = strtolower($trainer['name'] ?? '');
+                    $nameMatches = str_contains($name, strtolower($fullname));
+                }
+
+                if (!empty($location)) {
+                    $trainerLocation = strtolower($trainer['city'] ?? '');
+                    $locationMatches = str_contains($trainerLocation, strtolower($location));
+                }
+
                 if (!empty($fullname)) {
                     $name = strtolower($trainer['name'] ?? '');
                     $nameMatches = str_contains($name, strtolower($fullname));
@@ -52,18 +64,16 @@ class Trainer implements TrainerInterface
 
                 if (!empty($category)) {
                     $trainerCategories = array_map('strtolower', $trainer['category'] ?? []);
-                    $searchCategory = strtolower($category);
-                    
                     $categoryMatches = false;
-                    foreach ($trainerCategories as $cat) {
-                        if (str_contains($cat, $searchCategory)) {
+                    if (!empty($trainerCategories)) {
+                        $searchCategories = array_map('strtolower', $category);
+                        if (count(array_intersect($searchCategories, $trainerCategories)) > 0) {
                             $categoryMatches = true;
-                            break;
                         }
                     }
                 }
                 
-                return $nameMatches && $categoryMatches;
+                return $nameMatches && $categoryMatches && $locationMatches;
             });
 
             $trainers = array_values($filteredTrainers);

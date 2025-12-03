@@ -23,6 +23,7 @@ class TrainerController extends Controller
             'perPage' => 6,
             'fullname' => $request->get('fullname'),
             'category' => $request->get('category'),
+            'location' => $request->get('location'),
         ];
 
         $trainers = $this->trainer->getAllTrainers($filters);

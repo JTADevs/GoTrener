@@ -1,10 +1,27 @@
 <script setup>
     import Layout from '@/Layouts/Layout.vue';
     import { Form, Link, router, useForm } from '@inertiajs/vue3';
+    import { categories } from '../Data/Categories.js';
+    import { ref, computed, onMounted } from 'vue';
 
     const { trainers, filters } = defineProps({
         trainers: Object,
         filters: Object,
+    });
+
+    const showCategories = ref(false);
+    const categorySearch = ref('');
+
+    const filteredCategories = computed(() => {
+        return categories.filter(category =>
+            category.toLowerCase().includes(categorySearch.value.toLowerCase())
+        );
+    });
+
+    onMounted(() => {
+        document.body.addEventListener('click', () => {
+            showCategories.value = false;
+        });
     });
 
     const getAverageRating = (reviews) => {
@@ -18,6 +35,7 @@
     const goTo = (page) => {
         const currentFilters = {
             fullname: filters.fullname,
+            location: filters.location,
             category: filters.category,
         };
         
@@ -30,7 +48,8 @@
 
     const search = useForm({
         fullname: filters.fullname || '',
-        category: filters.category || ''
+        location: filters.location || '',
+        category: filters.category || []
     });
 
     const submitSearch = () => {
@@ -48,13 +67,31 @@
                 <div class="bg-white p-8 rounded-xl shadow-lg mb-12 mt-4">
                     <h2 class="text-2xl font-bold text-gray-800 text-center mb-6">Znajdź swojego trenera</h2>
                     <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4">
-                        <div class="relative flex-grow w-full md:w-auto">
+                        <div class="relative flex-grow w-full min-w-0">
                             <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" name="fullname" v-model="search.fullname" placeholder="Imię i nazwisko" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
                         </div>
-                        <div class="relative flex-grow w-full md:w-auto">
-                            <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="category" v-model="search.category" placeholder="Kategoria" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
+                        <div class="relative flex-grow w-full min-w-0">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="location" v-model="search.location" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
+                        </div>
+                        <div class="relative flex-grow w-full min-w-0">
+                            <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
+                            <button @click.stop="showCategories = !showCategories" type="button" class="w-full text-left p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow overflow-hidden">
+                                <span v-if="search.category.length === 0">Kategoria</span>
+                                <span v-else class="text-sm block truncate">{{ search.category.join(', ') }}</span>
+                            </button>
+                            <div v-if="showCategories" class="absolute z-20 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg" @click.stop>
+                                <div class="p-2">
+                                    <input type="text" placeholder="Szukaj kategorii..." class="w-full p-2 border-b border-gray-200 focus:outline-none" v-model="categorySearch">
+                                </div>
+                                <div class="max-h-60 overflow-y-auto">
+                                    <label v-for="category in filteredCategories" :key="category" class="flex items-center p-2 hover:bg-gray-100 cursor-pointer">
+                                        <input type="checkbox" :value="category" v-model="search.category" class="mr-2">
+                                        {{ category }}
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                         <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-all duration-300 transform hover:scale-105 shadow-md">
                             <i class="fa-solid fa-search mr-2"></i>Szukaj
