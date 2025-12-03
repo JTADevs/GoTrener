@@ -117,6 +117,7 @@ class Trainer implements TrainerInterface
             'prevPage' => $prevPage,
             'fullname' => $fullname,
             'category' => $category,
+            'location' => $location,
         ];
     }
 
