@@ -1,5 +1,36 @@
 <script setup>
-import Layout from '../Layouts/Layout.vue';
+    import Layout from '../Layouts/Layout.vue';
+    import { Form, router, useForm } from '@inertiajs/vue3';
+    import { categories } from '../Data/Categories.js';
+    import { ref, computed, onMounted } from 'vue';
+
+    const showCategories = ref(false);
+    const categorySearch = ref('');
+
+    const filteredCategories = computed(() => {
+        return categories.filter(category =>
+            category.toLowerCase().includes(categorySearch.value.toLowerCase())
+        );
+    });
+
+    onMounted(() => {
+        document.body.addEventListener('click', () => {
+            showCategories.value = false;
+        });
+    });
+
+    const search = useForm({
+        fullname: '',
+        location: '',
+        category: []
+    });
+
+    const submitSearch = () => {
+        search.get('/trainers', { 
+            preserveState: true, 
+            replace: true,
+        });
+    }
 </script>
 
 <template>
@@ -11,11 +42,33 @@ import Layout from '../Layouts/Layout.vue';
                 <div class="absolute inset-0 bg-opacity-50 flex flex-col justify-center items-center text-center text-white p-4">
                     <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">ODKRYJ SWÓJ POTENCJAŁ</h1>
                     <p class="mt-4 text-lg md:text-xl max-w-2xl">Znajdź idealnego trenera personalnego, który pomoże Ci osiągnąć Twoje cele fitness.</p>
-                    <form action="" class="flex flex-col md:flex-row items-center mt-8 space-y-4 md:space-y-0 md:space-x-4 w-full max-w-xl">
-                        <input type="text" name="dyscyplina" placeholder="Dyscyplina, np. 'trening siłowy'" class="bg-white/90 text-gray-800 placeholder-gray-500 rounded-lg shadow-md p-4 w-full focus:ring-2 focus:ring-[#F5F570] focus:outline-none transition">
-                        <input type="text" name="lokalizacja" placeholder="Lokalizacja, np. 'Warszawa'" class="bg-white/90 text-gray-800 placeholder-gray-500 rounded-lg shadow-md p-4 w-full focus:ring-2 focus:ring-[#F5F570] focus:outline-none transition">
-                        <button class="text-[#241F20] bg-[#F5F570] p-4 rounded-lg font-bold shadow-lg hover:bg-yellow-300 transform hover:scale-105 transition-all duration-300 w-full md:w-auto flex-shrink-0">Szukaj</button>
-                    </form>
+                    <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mt-8">
+                        <div class="relative flex-grow w-full min-w-0">
+                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" name="location" v-model="search.location" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow bg-white/90 text-gray-800 placeholder-gray-500"/>
+                        </div>
+                        <div class="relative flex-grow w-full min-w-0">
+                            <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
+                            <button @click.stop="showCategories = !showCategories" type="button" class="w-full text-left p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow overflow-hidden bg-white/90 text-gray-800 placeholder-gray-500">
+                                <span v-if="search.category.length === 0">Kategoria</span>
+                                <span v-else class="text-sm block truncate">{{ search.category.join(', ') }}</span>
+                            </button>
+                            <div v-if="showCategories" class="absolute z-20 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg" @click.stop>
+                                <div class="p-2">
+                                    <input type="text" placeholder="Szukaj kategorii..." class="w-full p-2 border-b border-gray-200 focus:outline-none cursor-pointer" v-model="categorySearch">
+                                </div>
+                                <div class="max-h-60 overflow-y-auto">
+                                    <label v-for="category in filteredCategories" :key="category" class="flex items-center p-2 hover:bg-gray-100 cursor-pointer text-gray-800">
+                                        <input type="checkbox" :value="category" v-model="search.category" class="mr-2 cursor-pointer">
+                                        {{ category }}
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[#F5F570] text-[#241F20] font-semibold rounded-full hover:bg-[#241F20] hover:text-[#F5F570] transition-all duration-300 transform hover:scale-105 shadow-md cursor-pointer">
+                            <i class="fa-solid fa-search mr-2"></i>Szukaj
+                        </button>
+                    </Form>
                 </div>
             </div>
 
