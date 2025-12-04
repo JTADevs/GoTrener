@@ -171,4 +171,25 @@ class Trainer implements TrainerInterface
         return true;
     }
 
+    public function getPremiumTrainers(int $count = 4)
+    {
+        $docs = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->where('role', '=', 'trainer')
+            ->where('is_premium', '=', true)
+            ->documents();
+
+        $premiumTrainers = [];
+        foreach ($docs as $doc) {
+            if ($doc->exists()) {
+                $premiumTrainers[] = array_merge($doc->data(), ['uid' => $doc->id()]);
+            }
+        }
+
+        shuffle($premiumTrainers);
+
+        return array_slice($premiumTrainers, 0, $count);
+    }
+
 }

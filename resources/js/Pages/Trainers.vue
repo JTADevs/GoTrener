@@ -93,7 +93,7 @@
                                 </div>
                             </div>
                         </div>
-                        <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-all duration-300 transform hover:scale-105 shadow-md">
+                        <button type="submit" class="w-full md:w-auto px-8 py-3 bg-[#241F20] text-white font-semibold rounded-full hover:bg-[#F5F570] hover:text-[#241F20] transition-all duration-300 transform hover:scale-105 shadow-md cursor-pointer">
                             <i class="fa-solid fa-search mr-2"></i>Szukaj
                         </button>
                     </Form>
@@ -101,12 +101,14 @@
                 <h1 class="text-3xl font-bold text-gray-800 mb-8 text-center">Nasi Trenerzy</h1>
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div 
-                        v-for="trainer in trainers.data" 
-                        :key="trainer.uid" 
-                        class="p-6 flex flex-col items-center bg-white shadow-lg rounded-xl transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer"
+                    <div v-for="trainer in trainers.data" :key="trainer.uid"
+                        :class="[
+                            'p-6 flex flex-col items-center bg-white shadow-lg rounded-xl transform hover:-translate-y-2 transition-transform duration-300 cursor-pointer border-2',
+                            trainer.is_premium ? 'border-yellow-500' : 'border-transparent'
+                        ]"
                         @click="goToProfile(trainer.uid)"
                     >
+
                         <img 
                             :src="trainer.imageURL || '/images/no_user.png'" 
                             alt="zdjęcie trenera" 

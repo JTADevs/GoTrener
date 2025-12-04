@@ -7,4 +7,5 @@ interface TrainerInterface
     public function getAllTrainers(array $filters);
     public function getTrainer(string $uid);
     public function submitReview(string $trainerId, array $data);
+    public function getPremiumTrainers(int $limit);
 }

@@ -1,6 +1,6 @@
 <script setup>
     import Layout from '../Layouts/Layout.vue';
-    import { Form, router, useForm } from '@inertiajs/vue3';
+    import { Form, Link, router, useForm } from '@inertiajs/vue3';
     import { categories } from '../Data/Categories.js';
     import { ref, computed, onMounted } from 'vue';
 
@@ -31,6 +31,12 @@
             replace: true,
         });
     }
+
+    const { premiumTrainers } = defineProps({
+        premiumTrainers: Object,
+    });
+
+    console.log(premiumTrainers);
 </script>
 
 <template>
@@ -100,30 +106,20 @@
             </div>
 
             <!-- Recommended Trainers Section -->
-            <div class="w-full py-20 bg-gray-100">
+            <div class="w-full py-20 bg-gray-100" v-if="premiumTrainers">
                 <div class="w-[80%] mx-auto">
                     <h2 class="font-extrabold text-4xl text-center mb-12">Polecani Trenerzy</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
-                        <div class="bg-white rounded-lg shadow-xl text-center p-6 transform hover:-translate-y-2 transition-transform duration-300">
-                            <img src="../../../public/images/trener.jpg" alt="trener1" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
-                            <p class="text-xl font-semibold mt-4">Michał Sławek</p>
-                            <p class="text-gray-500">Trener Siłowy</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-xl text-center p-6 transform hover:-translate-y-2 transition-transform duration-300">
-                            <img src="../../../public/images/trener.jpg" alt="trener2" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
-                            <p class="text-xl font-semibold mt-4">Tymoteusz Palak</p>
-                            <p class="text-gray-500">CrossFit</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-xl text-center p-6 transform hover:-translate-y-2 transition-transform duration-300">
-                            <img src="../../../public/images/trener.jpg" alt="trener3" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
-                            <p class="text-xl font-semibold mt-4">Jakub Kurzacz</p>
-                             <p class="text-gray-500">Kalistenika</p>
-                        </div>
-                        <div class="bg-white rounded-lg shadow-xl text-center p-6 transform hover:-translate-y-2 transition-transform duration-300">
-                            <img src="../../../public/images/trener.jpg" alt="trener4" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
-                            <p class="text-xl font-semibold mt-4">Sebastian Skubała</p>
-                            <p class="text-gray-500">Dietetyk</p>
-                        </div>
+                        <Link :href="`/trainer/${trainer.uid}`" v-for="trainer in premiumTrainers" :key="trainer.uid" class="group ">
+                            <div class="bg-white rounded-lg shadow-xl text-center p-6 transform group-hover:-translate-y-2 transition-transform duration-300 flex flex-col items-center h-full border-2 border-yellow-500">
+                                <img :src="trainer.imageURL || '/images/no_user.png'" alt="trener" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
+                                <p class="text-xl font-semibold mt-4">{{ trainer.name }}</p>
+                                <p class="text-gray-500">
+                                    <i class="fa-solid fa-location-dot mr-2 text-yellow-500"></i>
+                                    {{ trainer.city }}
+                                </p>
+                            </div>
+                        </Link>
                     </div>
                 </div>
             </div>
@@ -137,10 +133,10 @@
                     <div class="md:w-1/2">
                         <h2 class="text-4xl font-extrabold mb-6">Dlaczego Warto Nam Zaufać?</h2>
                         <ul class="space-y-4 text-lg text-gray-600">
-                            <li class="flex items-start"><i class="fas fa-check-circle text-[#F5F570] mt-1 mr-3"></i><span><strong>Najlepsi Specjaliści:</strong> Baza zweryfikowanych i doświadczonych trenerów z całej Polski.</span></li>
-                            <li class="flex items-start"><i class="fas fa-check-circle text-[#F5F570] mt-1 mr-3"></i><span><strong>Elastyczność:</strong> Dopasuj treningi do swojego harmonogramu i budżetu.</span></li>
-                            <li class="flex items-start"><i class="fas fa-check-circle text-[#F5F570] mt-1 mr-3"></i><span><strong>Wsparcie i Motywacja:</strong> Znajdź nie tylko trenera, ale i mentora na swojej drodze do celu.</span></li>
-                            <li class="flex items-start"><i class="fas fa-check-circle text-[#F5F570] mt-1 mr-3"></i><span><strong>Prawdziwe Opinie:</strong> Sprawdzaj oceny i opinie innych użytkowników, by dokonać najlepszego wyboru.</span></li>
+                            <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Najlepsi Specjaliści:</strong> Baza zweryfikowanych i doświadczonych trenerów z całej Polski.</span></li>
+                            <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Elastyczność:</strong> Dopasuj treningi do swojego harmonogramu i budżetu.</span></li>
+                            <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Wsparcie i Motywacja:</strong> Znajdź nie tylko trenera, ale i mentora na swojej drodze do celu.</span></li>
+                            <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Prawdziwe Opinie:</strong> Sprawdzaj oceny i opinie innych użytkowników, by dokonać najlepszego wyboru.</span></li>
                         </ul>
                     </div>
                 </div>
