@@ -111,7 +111,7 @@
                     <h2 class="font-extrabold text-4xl text-center mb-12">Polecani Trenerzy</h2>
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
                         <Link :href="`/trainer/${trainer.uid}`" v-for="trainer in premiumTrainers" :key="trainer.uid" class="group ">
-                            <div class="bg-white rounded-lg shadow-xl text-center p-6 transform group-hover:-translate-y-2 transition-transform duration-300 flex flex-col items-center h-full border-2 border-yellow-500">
+                            <div class="bg-white rounded-lg shadow-xl text-center p-6 transform group-hover:-translate-y-2 transition-transform duration-300 flex flex-col items-center h-full border-2 border-[#F5F570]">
                                 <img :src="trainer.imageURL || '/images/no_user.png'" alt="trener" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
                                 <p class="text-xl font-semibold mt-4">{{ trainer.name }}</p>
                                 <p class="text-gray-500">

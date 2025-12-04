@@ -85,7 +85,7 @@
                         </div>
 
                         <!-- Social Media -->
-                        <div class="bg-white p-6 rounded-lg shadow-lg">
+                        <div class="bg-white p-6 rounded-lg shadow-lg mb-5">
                             <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Media społecznościowe</h2>
                             <div class="flex justify-around items-center pt-2">
                                 <a v-if="trainer.facebook" :href="trainer.facebook" target="_blank" class="text-blue-600 hover:text-blue-800 transition-transform duration-300 transform hover:scale-125"><i class="fa-brands fa-facebook fa-3x"></i></a>

@@ -13,7 +13,6 @@ use Inertia\Inertia;
 // });
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-
 Route::get('/auth', [AuthController::class, 'index'])->name('auth');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
