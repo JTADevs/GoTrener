@@ -194,11 +194,11 @@ const filteredEvents = computed(() => {
                 <div class="flex items-center justify-between">
                     <p class="font-bold text-lg text-gray-900">{{ new Date(event.selectedDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' }) }} o {{ event.eventTime }}</p>
                     <span class="px-3 py-1 text-sm font-medium rounded-full"
-                        :class="{
-                            'bg-blue-100 text-blue-800': new Date(event.selectedDate) > new Date(),
-                            'bg-green-100 text-green-800': new Date(event.selectedDate).toDateString() === new Date().toDateString(),
-                            'bg-gray-100 text-gray-800': new Date(event.selectedDate) < new Date() && new Date(event.selectedDate).toDateString() !== new Date().toDateString()
-                        }">
+                        :style="
+                            (new Date(event.selectedDate) > new Date() && new Date(event.selectedDate).toDateString() !== new Date().toDateString()) || new Date(event.selectedDate).toDateString() === new Date().toDateString()
+                            ? { backgroundColor: '#F5F570', color: '#241F20' }
+                            : { backgroundColor: '#38a169', color: '#FFFFFF' }"
+                        >
                         {{ new Date(event.selectedDate) > new Date() ? 'Nadchodzące' : (new Date(event.selectedDate).toDateString() === new Date().toDateString() ? 'Dziś' : 'Ukończone') }}
                     </span>
                 </div>
