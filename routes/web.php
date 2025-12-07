@@ -46,6 +46,7 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::post('/profil/update', [UserController::class, 'update']);
     Route::put('/profil/updateScore', [UserController::class, 'updateScore']);
     Route::get('/profil/calendar', [UserController::class, 'calendar']);
+    Route::post('/profil/events/create', [UserController::class, 'createEvent']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

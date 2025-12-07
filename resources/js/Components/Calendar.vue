@@ -1,9 +1,12 @@
 <script setup>
 import { computed, ref } from 'vue';
+import { Form, useForm } from '@inertiajs/vue3';
 
 const { user } = defineProps({
     user: Object,
 });
+
+console.log(user);
 
 const currentDate = ref(new Date());
 currentDate.value.setDate(1);
@@ -99,8 +102,37 @@ const openPopup = (day) => {
     if (!day) return;
     if (isPast(day.date) && !isToday(day.date)) return;
     selectedDate.value = day.date.toISOString().split('T')[0];
+    form.selectedDate = selectedDate.value;
     popupOpen.value = true;
 };
+
+const hasEvents = (date) => {
+    if (!date || !user.personalEvents) return false;
+    const dateString = date.toISOString().split('T')[0];
+    return user.personalEvents.some(event => event.selectedDate === dateString);
+};
+
+const form = useForm({
+    selectedDate: '',
+    eventTime: '',
+    eventDescription: '',
+});
+
+const filteredEvents = computed(() => {
+    if (!user.personalEvents) return [];
+    const year = currentDate.value.getFullYear();
+    const month = currentDate.value.getMonth();
+    return user.personalEvents
+        .filter(event => {
+            const eventDate = new Date(event.selectedDate);
+            return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+        })
+        .sort((a, b) => {
+            const dateA = new Date(`${a.selectedDate}T${a.eventTime}`);
+            const dateB = new Date(`${b.selectedDate}T${b.eventTime}`);
+            return dateA - dateB;
+        });
+});
 </script>
 
 <template>
@@ -137,13 +169,14 @@ const openPopup = (day) => {
                             @click="openPopup(day)"
                             :class="[
                                 'h-full w-full flex items-center justify-center rounded-lg transition-colors',
-                                (isPast(day.date) && !isToday(day.date)) ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-blue-50'
+                                { 'bg-yellow-100': hasEvents(day.date) && !isToday(day.date) },
+                                (isPast(day.date) && !isToday(day.date)) ? 'cursor-not-allowed' : 'cursor-pointer hover:bg-[#F5F570]'
                             ]">
                             <span class="text-sm sm:text-base"
                                 :class="{
                                     'text-gray-400': isPast(day.date) && !isToday(day.date),
                                     'text-gray-900': !isPast(day.date) || isToday(day.date),
-                                    'bg-blue-500 text-white rounded-full h-8 w-8 flex items-center justify-center font-bold': isToday(day.date)
+                                    'bg-[#F5F570] text-[#241F20] rounded-full h-8 w-8 flex items-center justify-center font-bold': isToday(day.date)
                                 }">
                                 {{ day.date.getDate() }}
                             </span>
@@ -154,28 +187,64 @@ const openPopup = (day) => {
         </table>
     </div>
 
+    <div class="mt-8 p-6 bg-gray-50 rounded-xl shadow-inner">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Twoje zbliżające się wydarzenia w: <span class="capitalize">{{ monthName }} {{ year }}</span></h2>
+        <div v-if="filteredEvents.length > 0" class="space-y-4">
+            <div v-for="event in filteredEvents" :key="event.id" class="p-5 border border-gray-200 rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1">
+                <div class="flex items-center justify-between">
+                    <p class="font-bold text-lg text-gray-900">{{ new Date(event.selectedDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' }) }} o {{ event.eventTime }}</p>
+                    <span class="px-3 py-1 text-sm font-medium rounded-full"
+                        :class="{
+                            'bg-blue-100 text-blue-800': new Date(event.selectedDate) > new Date(),
+                            'bg-green-100 text-green-800': new Date(event.selectedDate).toDateString() === new Date().toDateString(),
+                            'bg-gray-100 text-gray-800': new Date(event.selectedDate) < new Date() && new Date(event.selectedDate).toDateString() !== new Date().toDateString()
+                        }">
+                        {{ new Date(event.selectedDate) > new Date() ? 'Nadchodzące' : (new Date(event.selectedDate).toDateString() === new Date().toDateString() ? 'Dziś' : 'Ukończone') }}
+                    </span>
+                </div>
+                <p class="text-gray-700 mt-2">{{ event.eventDescription }}</p>
+            </div>
+        </div>
+        <div v-else class="text-center py-10 px-4 border-2 border-dashed border-gray-300 rounded-lg bg-white">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                <path vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            <h3 class="mt-2 text-sm font-semibold text-gray-900">Brak wydarzeń</h3>
+            <p class="mt-1 text-sm text-gray-500">Brak zaplanowanych wydarzeń w tym miesiącu.</p>
+        </div>
+    </div>
+
     <div v-if="popupOpen" class="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50" style="background-color: rgba(0, 0, 0, 0.5);">
         <div class="bg-white rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
             <div class="flex justify-between items-center pb-3 border-b border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800">Umów się na trening</h3>
+                <h3 class="text-xl font-semibold text-gray-800">Zaznacz wydarzenie</h3>
                 <button @click="popupOpen = false" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <span class="text-2xl font-bold">&times;</span>
                 </button>
             </div>
-            <div class="py-4">
-                <p class="text-base text-gray-700">
-                    Wybrana data: <span class="font-semibold">{{ selectedDate }}</span>
-                </p>
-                <p class="text-sm text-gray-600 mt-2">
-                    Wybierz godzinę, o której chcesz odbyć trening.
-                </p>
-            </div>
+            <Form @submit.prevent="form.post('/profil/events/create')" class="mt-4">
+                <div class="py-4">
+                    <p class="text-base text-gray-700">
+                        Wybrana data: <span class="font-semibold">{{ selectedDate }}</span>
+                    </p>
+                    <p class="text-sm text-gray-600 mt-2">
+                        Wybierz godzinę, o której chcesz odbyć trening.
+                        <input type="time" v-model="form.eventTime" name="eventTime" class="mt-2 border border-gray-300 rounded-lg px-2 py-1 w-full">
+                    </p>
+                    <p class="text-sm text-gray-600 mt-2">
+                        Krótki opis wydarzenia:
+                        <textarea v-model="form.eventDescription" name="eventDescription" rows="3" class="mt-2 border border-gray-300 rounded-lg px-2 py-1 w-full" placeholder="Np. Trening z klientem/trenerem"></textarea>
+                    </p>
+                    <p class="mt-2">
+                        <button type="submit" class="px-4 py-2 bg-[#F5F570] text-[#241F20] rounded-lg hover:bg-[#E6E65C] cursor-pointer transition-colors">
+                            Zatwierdź
+                        </button>
+                    </p>
+                </div>
+            </Form>
             <div class="flex justify-end pt-4 border-t border-gray-200">
                 <button @click="popupOpen = false" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer transition-colors mr-2">
                     Anuluj
-                </button>
-                <button @click="popupOpen = false" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 cursor-pointer transition-colors">
-                    Zatwierdź
                 </button>
             </div>
         </div>

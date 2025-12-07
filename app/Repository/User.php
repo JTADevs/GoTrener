@@ -33,6 +33,20 @@ class User implements UserInterface
                 ->snapshot()
                 ->data() ?? []]);
 
+        $personalEventsSnapshot = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->collection('personalEvents')
+            ->documents();
+
+        $personalEvents = [];
+        foreach ($personalEventsSnapshot as $document) {
+            $personalEvents[] = $document->data();
+        }
+
+        $user = array_merge($user, ['personalEvents' => $personalEvents]);  
+
         return $user;
     }
 
@@ -84,6 +98,22 @@ class User implements UserInterface
                 'calfCircumference' => $data['calfCircumference'],
                 'ankleCircumference' => $data['ankleCircumference'],    
             ], ['merge' => true]);
+        return true;    
+    }
+
+    public function createEvent(array $data)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($data['user_id'])
+            ->collection('personalEvents')
+            ->add([
+                'selectedDate' => $data['selectedDate'],
+                'eventTime' => $data['eventTime'],
+                'eventDescription' => $data['eventDescription'],
+                'created_at' => now(),
+            ]);
         return true;    
     }
 

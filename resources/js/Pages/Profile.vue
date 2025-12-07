@@ -53,7 +53,7 @@
 
                 <!-- Main Content -->
                 <main class="flex-1 p-4 sm:p-6 lg:p-8">
-                    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
+                    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden p-2">
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"></Calendar>
                         <div v-if="activeView === 'treningi'" class="p-6">Moje treningi - wkrótce</div>

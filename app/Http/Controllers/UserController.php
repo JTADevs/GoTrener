@@ -51,4 +51,12 @@ class UserController extends Controller
         $this->user->updateScore($request->all());
         return redirect()->route('profile');    
     }
+
+    public function createEvent(Request $request)
+    {
+        $data = $request->all();
+        $data['user_id'] = session('loggedUser.uid');
+        $this->user->createEvent($data);
+        return Inertia::location(route('profile'));
+    }
 }
