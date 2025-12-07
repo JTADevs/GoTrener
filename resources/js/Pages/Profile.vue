@@ -1,15 +1,15 @@
 <script setup>
+    import Calendar from '../Components/Calendar.vue';
     import ProfileData from '../Components/ProfileData.vue';
     import Layout from '../Layouts/Layout.vue';
-    import { Link } from '@inertiajs/vue3';
     import { ref } from 'vue';
 
     defineProps({
         user: Object,
-        url: String
     });
 
     const sidebarOpen = ref(false);
+    const activeView = ref('profil');
 </script>
 
 <template>
@@ -28,33 +28,37 @@
 
                     <!-- Sidebar Content -->
                     <nav :class="sidebarOpen ? 'block' : 'hidden'" class="lg:block py-4">
-                        <Link href="/profil" class="flex items-center px-6 py-3 transition-colors duration-200" :class="url === 'profil' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="activeView = 'profil'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'profil' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-user-gear w-6 text-center"></i>
                             <span class="mx-4 font-medium">Profil</span>
-                        </Link>
-                        <Link href="/" class="flex items-center px-6 py-3 hover:bg-gray-700 transition-colors duration-200">
-                            <i class="fa-solid fa-dumbbell w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Moje treningi</span>
-                        </Link>
-                        <Link href="/" class="flex items-center px-6 py-3 hover:bg-gray-700 transition-colors duration-200">
-                            <i class="fa-solid fa-comments w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Komunikator</span>
-                        </Link>
-                        <Link href="/" class="flex items-center px-6 py-3 hover:bg-gray-700 transition-colors duration-200">
-                            <i class="fa-solid fa-chart-line w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Statystyki</span>
-                        </Link>
-                        <Link href="/" class="flex items-center px-6 py-3 hover:bg-gray-700 transition-colors duration-200">
+                        </button>
+                        <button @click="activeView = 'calendar'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'calendar' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-calendar-days w-6 text-center"></i>
                             <span class="mx-4 font-medium">Kalendarz</span>
-                        </Link>
+                        </button>
+                        <button @click="activeView = 'treningi'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'treningi' ? 'active-link' : 'hover:bg-gray-700'">
+                            <i class="fa-solid fa-dumbbell w-6 text-center"></i>
+                            <span class="mx-4 font-medium">Moje treningi</span>
+                        </button>
+                        <button @click="activeView = 'komunikator'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
+                            <i class="fa-solid fa-comments w-6 text-center"></i>
+                            <span class="mx-4 font-medium">Komunikator</span>
+                        </button>
+                        <button @click="activeView = 'statystyki'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'statystyki' ? 'active-link' : 'hover:bg-gray-700'">
+                            <i class="fa-solid fa-chart-line w-6 text-center"></i>
+                            <span class="mx-4 font-medium">Statystyki</span>
+                        </button>
                     </nav>
                 </aside>
 
                 <!-- Main Content -->
                 <main class="flex-1 p-4 sm:p-6 lg:p-8">
                     <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden">
-                        <ProfileData v-if="url === 'profil'" :user="user" :url="url"/>
+                        <ProfileData v-if="activeView === 'profil'" :user="user"/>
+                        <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"></Calendar>
+                        <div v-if="activeView === 'treningi'" class="p-6">Moje treningi - wkrótce</div>
+                        <div v-if="activeView === 'komunikator'" class="p-6">Komunikator - wkrótce</div>
+                        <div v-if="activeView === 'statystyki'" class="p-6">Statystyki - wkrótce</div>
                     </div>
                 </main>
             </div>

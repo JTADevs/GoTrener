@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Repository\UserInterface;
+use Carbon\Carbon;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -24,7 +26,6 @@ class UserController extends Controller
 
         return Inertia::render('Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
-            'url' => $request->path()
         ]);
     }
 
