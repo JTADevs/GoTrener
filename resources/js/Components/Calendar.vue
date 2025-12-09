@@ -6,8 +6,6 @@ const { user } = defineProps({
     user: Object,
 });
 
-console.log(user);
-
 const currentDate = ref(new Date());
 currentDate.value.setDate(1);
 
@@ -108,8 +106,12 @@ const openPopup = (day) => {
 
 const hasEvents = (date) => {
     if (!date || !user.personalEvents) return false;
-    const dateString = date.toISOString().split('T')[0];
-    return user.personalEvents.some(event => event.selectedDate === dateString);
+    const dateString = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2);
+    return user.personalEvents.some(event => {
+        const eventDate = new Date(event.selectedDate.replace(/-/g, '\/'));
+        const eventDateString = eventDate.getFullYear() + '-' + ('0' + (eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + eventDate.getDate()).slice(-2);
+        return eventDateString === dateString;
+    });
 };
 
 const form = useForm({
@@ -118,18 +120,28 @@ const form = useForm({
     eventDescription: '',
 });
 
+const deleteForm = useForm({
+    id: '',
+});
+
+const confirmDelete = (eventId) => {
+    if (confirm('Czy na pewno chcesz usunąć to wydarzenie?')) {
+        deleteForm.delete(`/profil/events/${eventId}/delete`);
+    }
+};
+
 const filteredEvents = computed(() => {
     if (!user.personalEvents) return [];
     const year = currentDate.value.getFullYear();
     const month = currentDate.value.getMonth();
     return user.personalEvents
         .filter(event => {
-            const eventDate = new Date(event.selectedDate);
+            const eventDate = new Date(event.selectedDate.replace(/-/g, '\/'));
             return eventDate.getFullYear() === year && eventDate.getMonth() === month;
         })
         .sort((a, b) => {
-            const dateA = new Date(`${a.selectedDate}T${a.eventTime}`);
-            const dateB = new Date(`${b.selectedDate}T${b.eventTime}`);
+            const dateA = new Date(`${a.selectedDate.replace(/-/g, '\/')}T${a.eventTime}`);
+            const dateB = new Date(`${b.selectedDate.replace(/-/g, '\/')}T${b.eventTime}`);
             return dateA - dateB;
         });
 });
@@ -192,17 +204,28 @@ const filteredEvents = computed(() => {
         <div v-if="filteredEvents.length > 0" class="space-y-4">
             <div v-for="event in filteredEvents" :key="event.id" class="p-5 border border-gray-200 rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1">
                 <div class="flex items-center justify-between">
-                    <p class="font-bold text-lg text-gray-900">{{ new Date(event.selectedDate).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' }) }} o {{ event.eventTime }}</p>
+                    <p class="font-bold text-lg text-gray-900">{{ new Date(event.selectedDate.replace(/-/g, '\/')).toLocaleDateString('pl-PL', { day: 'numeric', month: 'long' }) }} o {{ event.eventTime }}</p>
                     <span class="px-3 py-1 text-sm font-medium rounded-full"
                         :style="
-                            (new Date(event.selectedDate) > new Date() && new Date(event.selectedDate).toDateString() !== new Date().toDateString()) || new Date(event.selectedDate).toDateString() === new Date().toDateString()
+                            (new Date(event.selectedDate.replace(/-/g, '\/')) > new Date() && new Date(event.selectedDate.replace(/-/g, '\/')).toDateString() !== new Date().toDateString()) || new Date(event.selectedDate.replace(/-/g, '\/')).toDateString() === new Date().toDateString()
                             ? { backgroundColor: '#F5F570', color: '#241F20' }
                             : { backgroundColor: '#38a169', color: '#FFFFFF' }"
                         >
-                        {{ new Date(event.selectedDate) > new Date() ? 'Nadchodzące' : (new Date(event.selectedDate).toDateString() === new Date().toDateString() ? 'Dziś' : 'Ukończone') }}
+                        {{ new Date(event.selectedDate.replace(/-/g, '\/')) > new Date() ? 'Nadchodzące' : (new Date(event.selectedDate.replace(/-/g, '\/')).toDateString() === new Date().toDateString() ? 'Dziś' : 'Ukończone') }}
                     </span>
                 </div>
                 <p class="text-gray-700 mt-2">{{ event.eventDescription }}</p>
+                <span class="flex justify-end cursor-pointer">
+                    <span @click="confirmDelete(event.id)">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="text-red-500 hover:text-red-600 transition-colors">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="m15 9-6 6"/>
+                        <path d="m9 9 6 6"/>
+                        </svg>
+                    </span>
+                </span>
             </div>
         </div>
         <div v-else class="text-center py-10 px-4 border-2 border-dashed border-gray-300 rounded-lg bg-white">

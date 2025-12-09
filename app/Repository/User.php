@@ -42,7 +42,10 @@ class User implements UserInterface
 
         $personalEvents = [];
         foreach ($personalEventsSnapshot as $document) {
-            $personalEvents[] = $document->data();
+            $personalEvents[] = array_merge(
+                $document->data(),
+                ['id' => $document->id()]
+            );
         }
 
         $user = array_merge($user, ['personalEvents' => $personalEvents]);  
@@ -113,6 +116,52 @@ class User implements UserInterface
                 'eventTime' => $data['eventTime'],
                 'eventDescription' => $data['eventDescription'],
                 'created_at' => now(),
+            ]);
+        return true;    
+    }
+
+    public function deleteEvent(string $id)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->collection('personalEvents')
+            ->document($id)
+            ->delete();
+        return true;    
+    }
+
+    public function updateStats(array $data)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->set([
+                'statsUpdatePeriod' => $data['period'],
+                'statsUpdatedAt' => now(),
+            ], ['merge' => true]);
+
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->collection('statsHistory')
+            ->add([
+                'created_at' => now(),
+                'weight' => $data['weight'],
+                'height' => $data['height'],
+                'neckCircumference' => $data['neckCircumference'],
+                'chestCircumference' => $data['chestCircumference'],
+                'waistCircumference' => $data['waistCircumference'],
+                'abdomenCircumference' => $data['abdomenCircumference'],
+                'hipCircumference' => $data['hipCircumference'],
+                'bicepsCircumference' => $data['bicepsCircumference'],
+                'wristCircumference' => $data['wristCircumference'],
+                'thighCircumference' => $data['thighCircumference'],
+                'calfCircumference' => $data['calfCircumference'],
+                'ankleCircumference' => $data['ankleCircumference'],    
             ]);
         return true;    
     }

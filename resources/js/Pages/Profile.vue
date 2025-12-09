@@ -1,6 +1,7 @@
 <script setup>
     import Calendar from '../Components/Calendar.vue';
     import ProfileData from '../Components/ProfileData.vue';
+    import Stats from '../Components/Stats.vue';
     import Layout from '../Layouts/Layout.vue';
     import { ref } from 'vue';
 
@@ -55,10 +56,10 @@
                 <main class="flex-1 p-4 sm:p-6 lg:p-8">
                     <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden p-2">
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
-                        <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"></Calendar>
+                        <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
                         <div v-if="activeView === 'treningi'" class="p-6">Moje treningi - wkrótce</div>
                         <div v-if="activeView === 'komunikator'" class="p-6">Komunikator - wkrótce</div>
-                        <div v-if="activeView === 'statystyki'" class="p-6">Statystyki - wkrótce</div>
+                        <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>
                 </main>
             </div>

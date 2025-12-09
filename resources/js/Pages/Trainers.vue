@@ -72,7 +72,7 @@
                             <input type="text" name="fullname" v-model="search.fullname" placeholder="Imię i nazwisko" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
                         </div>
                         <div class="relative flex-grow w-full min-w-0">
-                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" name="location" v-model="search.location" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
                         </div>
                         <div class="relative flex-grow w-full min-w-0">

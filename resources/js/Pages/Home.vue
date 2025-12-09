@@ -50,7 +50,7 @@
                     <p class="mt-4 text-lg md:text-xl max-w-2xl">Znajdź idealnego trenera personalnego, który pomoże Ci osiągnąć Twoje cele fitness.</p>
                     <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mt-8">
                         <div class="relative flex-grow w-full min-w-0">
-                            <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
                             <input type="text" name="location" v-model="search.location" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow bg-white/90 text-gray-800 placeholder-gray-500"/>
                         </div>
                         <div class="relative flex-grow w-full min-w-0">

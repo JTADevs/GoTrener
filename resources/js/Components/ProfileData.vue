@@ -1,7 +1,8 @@
 <script setup>
 import { computed } from 'vue';
 import { Form, useForm } from '@inertiajs/vue3';
-import { categories } from '../Data/categories.js';
+import { categories } from '../Data/Categories.js';
+import { dimensions } from '../Data/Dimensions.js';
 
 const { user } = defineProps({ 
     user: Object,
@@ -183,11 +184,17 @@ const handleImage = (e) => {
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div v-for="dimension in dimensions" :key="dimension.key">
+                            <label :for="dimension.key" class="block text-sm font-medium text-gray-700 mb-1">{{ dimension.label }}</label>
+                            <input type="text" :id="dimension.key" v-model="scoreForm[dimension.key]" :placeholder="dimension.label" class="form-input border-1 p-1 rounded-xl text-center">
+                        </div>
+                    </div>
+                    <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div v-for="(label, key) in { weight: 'Waga [kg]', height: 'Wzrost [cm]', neckCircumference: 'Obwód szyi [cm]', chestCircumference: 'Obwód klatki [cm]', waistCircumference: 'Obwód talii [cm]', abdomenCircumference: 'Obwód brzucha [cm]', hipCircumference: 'Obwód bioder [cm]', bicepsCircumference: 'Obwód bicepsa [cm]', wristCircumference: 'Obwód nadgarstka [cm]', thighCircumference: 'Obwód uda [cm]', calfCircumference: 'Obwód łydki [cm]', ankleCircumference: 'Obwód kostki [cm]' }" :key="key">
                             <label :for="key" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
                             <input type="text" :id="key" v-model="scoreForm[key]" :placeholder="label" class="form-input border-1 p-1 rounded-xl text-center">
                         </div>
-                    </div>
+                    </div> -->
                 </fieldset>
                 <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">Zapisz Pomiary</button>
             </Form>

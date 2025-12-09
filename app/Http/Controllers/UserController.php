@@ -59,4 +59,16 @@ class UserController extends Controller
         $this->user->createEvent($data);
         return Inertia::location(route('profile'));
     }
+
+    public function deleteEvent($id)
+    {
+        $this->user->deleteEvent($id);
+        return Inertia::location(route('profile'));
+    }
+
+    public function updateStats(Request $request)
+    {
+        $this->user->updateStats($request->all());
+        return Inertia::location(route('profile'));
+    }
 }
