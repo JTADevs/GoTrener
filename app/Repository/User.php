@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Services\FirebaseService;
+use Google\Cloud\Firestore\FieldValue;
 
 class User implements UserInterface
 {
@@ -73,8 +74,21 @@ class User implements UserInterface
                 'tiktok' => $data['tiktok'] ?? '',
                 'youtube' => $data['youtube'] ?? '',
                 'bio' => $data['bio'] ?? '',
+                'motto' => $data['motto'] ?? '',
                 'category' => $data['category'] ?? [],    
             ], ['merge' => true]); 
+        return true;
+    }
+
+    public function updateGallery(array $data)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->set([
+                'gallery' => $data['gallery'] ?? []
+            ], ['merge' => true]);
         return true;
     }
 
@@ -140,7 +154,7 @@ class User implements UserInterface
             ->document(session('loggedUser.uid'))
             ->set([
                 'statsUpdatePeriod' => $data['period'],
-                'statsUpdatedAt' => now(),
+                'statsUpdatedAt' => now()->toDateString(),
             ], ['merge' => true]);
 
         $this->firebase->firestore()
@@ -164,6 +178,27 @@ class User implements UserInterface
                 'ankleCircumference' => $data['ankleCircumference'],    
             ]);
         return true;    
+    }
+
+    public function resetStats(string $id)
+    {
+        $userRef = $this->firebase->firestore()->database()
+                    ->collection('users')
+                    ->document(session('loggedUser.uid'));
+        $userRef->update([
+            ['path' => 'statsUpdatePeriod', 'value' => FieldValue::deleteField()],
+            ['path' => 'statsUpdatedAt', 'value' => FieldValue::deleteField()],
+        ]);
+
+         $statsHistory = $userRef->collection('statsHistory')->documents();
+
+        foreach ($statsHistory as $doc) {
+            if ($doc->exists()) {
+                $doc->reference()->delete();
+            }
+        }
+
+        return true;
     }
 
 }

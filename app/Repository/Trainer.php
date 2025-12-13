@@ -154,6 +154,13 @@ class Trainer implements TrainerInterface
             ->document(session('loggedUser.uid'))
             ->snapshot()
             ->data()['name'] ?? 'Anonymous';
+        
+        $imageURL = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->snapshot()
+            ->data()['imageURL'] ?? '';
 
         $this->firebase->firestore()
             ->database()
@@ -166,6 +173,7 @@ class Trainer implements TrainerInterface
                 'rating' => $data['rating'],
                 'comment' => $data['comment'],
                 'userName' => $userName,
+                'imageURL' => $imageURL,
                 'created_at' => now(),
             ]);
         return true;

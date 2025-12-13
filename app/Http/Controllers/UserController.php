@@ -4,10 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Repository\UserInterface;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -45,6 +44,22 @@ class UserController extends Controller
         $this->user->update($data);
         return redirect()->route('profile');
     }
+    
+    public function gallery(Request $request)
+    {
+        $gallery = [];
+        if ($request->hasFile('photos')) {
+            $uid = session('loggedUser.uid');
+            Storage::disk('public')->deleteDirectory('gallery/' . $uid);
+            foreach ($request->file('photos') as $photo) {
+                $filename = uniqid() . '.' . $photo->getClientOriginalExtension();
+                $path = $photo->storeAs('gallery/' . $uid, $filename, 'public');
+                $gallery[] = asset('storage/' . $path);
+            }
+        }
+        $this->user->updateGallery(['gallery' => $gallery]);
+        return redirect()->route('profile');
+    }
 
     public function updateScore(Request $request)
     {
@@ -57,18 +72,20 @@ class UserController extends Controller
         $data = $request->all();
         $data['user_id'] = session('loggedUser.uid');
         $this->user->createEvent($data);
-        return Inertia::location(route('profile'));
     }
 
     public function deleteEvent($id)
     {
         $this->user->deleteEvent($id);
-        return Inertia::location(route('profile'));
     }
 
     public function updateStats(Request $request)
     {
         $this->user->updateStats($request->all());
-        return Inertia::location(route('profile'));
+    }
+
+    public function resetStats()
+    {
+        $this->user->resetStats(session('loggedUser.uid'));
     }
 }

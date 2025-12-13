@@ -39,8 +39,18 @@
     const hoverRating = ref(0);
 
     const submitReview = () => {
+        if (reviewForm.rating === 0) {
+            alert('Musisz wystawić ocenę od 1 do 5 gwiazdek.');
+            return;
+        }
+        if (!reviewForm.comment || reviewForm.comment.trim() === '') {
+            alert('Musisz napisać komentarz.');
+            return;
+        }
         reviewForm.post(`/trainer/review/${trainer.uid}`);
     };
+
+    const selectedImage = ref(null);
 </script>
 
 <template>
@@ -52,7 +62,7 @@
                 <div class="relative bg-white shadow-xl rounded-lg -mt-16 mb-8 overflow-hidden">
                     <div class="h-48 bg-cover bg-center" style="background-image: url('/images/gym3.jpg');"></div>
                     <div class="absolute top-24 left-1/2 -translate-x-1/2">
-                        <img :src="trainer.imageURL || '/images/no_user.png'" alt="zdjecie profilowe" class="w-40 h-40 rounded-full object-cover border-8 border-white shadow-lg" />
+                        <img :src="trainer.imageURL || '/images/no_user.png'" alt="zdjecie profilowe" class="w-40 h-40 rounded-full object-cover border-8 border-white shadow-lg cursor-pointer" @click="selectedImage = trainer.imageURL || '/images/no_user.png'" />
                     </div>
                     <div class="text-center pt-24 pb-8">
                         <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ trainer.name }}</h1>
@@ -71,6 +81,9 @@
                             <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">O mnie</h2>
                             <p class="text-gray-700 leading-relaxed">
                                 {{ trainer.bio || 'Trener nie dodał jeszcze opisu.' }}
+                            </p>
+                            <p v-if="trainer.motto" class="mt-4 text-gray-600 italic font-semibold text-center">
+                                Motto: "{{ trainer.motto }}"
                             </p>
                         </div>
                         
@@ -99,6 +112,14 @@
 
                     <!-- Right Column -->
                     <div class="md:col-span-2 space-y-8">
+                        <!-- Gallery -->
+                        <div v-if="trainer.gallery && trainer.gallery.length > 0" class="bg-white p-6 rounded-lg shadow-lg">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">Galeria / Metamorfozy</h2>
+                            <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                                <img v-for="(photo, index) in trainer.gallery" :key="index" :src="photo" alt="Metamorfoza" class="w-full h-40 object-cover rounded-lg shadow-sm hover:scale-105 transition-transform duration-300 cursor-pointer" @click="selectedImage = photo">
+                            </div>
+                        </div>
+
                          <!-- Average Rating -->
                          <div class="bg-white p-6 rounded-lg shadow-lg text-center">
                             <h2 class="text-2xl font-bold text-gray-800 mb-4">Średnia ocena</h2>
@@ -125,9 +146,9 @@
                                     </div>
                                 </div>
                                 <div>
-                                    <textarea v-model="reviewForm.comment" placeholder="Jak oceniasz współpracę z trenerem?" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition" rows="5"></textarea>
+                                    <textarea v-model="reviewForm.comment" placeholder="Jak oceniasz współpracę z trenerem?" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-yellow-400 focus:border-transparent transition" rows="5" required></textarea>
                                 </div>
-                                <button type="submit" class="w-full px-6 py-4 bg-[#241F20] text-white font-bold text-lg rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg">Wyślij opinię</button>
+                                <button type="submit" class="w-full px-6 py-4 bg-[#241F20] text-white font-bold text-lg rounded-full hover:bg-yellow-400 hover:text-black transition-all duration-300 transform hover:scale-105 shadow-lg cursor-pointer">Wyślij opinię</button>
                             </form>
                         </div>
                         
@@ -136,7 +157,7 @@
                             <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-4">Opinie użytkowników</h2>
                             <div class="space-y-8">
                                 <div v-for="review in trainer.reviews" :key="review.userId" class="flex items-start space-x-4">
-                                    <img :src="review.userImage || '/images/no_user.png'" alt="User" class="w-12 h-12 rounded-full object-cover">
+                                    <img :src="review.imageURL  || '/images/no_user.png'" alt="User" class="w-12 h-12 rounded-full object-cover">
                                     <div class="flex-1">
                                         <div class="flex items-center justify-between">
                                             <p class="font-bold text-gray-800">{{ review.userName }}</p>
@@ -155,6 +176,14 @@
 
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Lightbox Modal -->
+        <div v-if="selectedImage" class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background-color: rgba(0, 0, 0, 0.9);" @click="selectedImage = null">
+            <div class="relative max-w-5xl max-h-full">
+                <button @click="selectedImage = null" class="absolute -top-12 right-0 text-white text-4xl hover:text-gray-300 font-bold">&times;</button>
+                <img :src="selectedImage" class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl" @click.stop />
             </div>
         </div>
     </Layout>

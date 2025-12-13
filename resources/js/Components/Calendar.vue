@@ -245,7 +245,11 @@ const filteredEvents = computed(() => {
                     <span class="text-2xl font-bold">&times;</span>
                 </button>
             </div>
-            <Form @submit.prevent="form.post('/profil/events/create')" class="mt-4">
+            <Form @submit.prevent="form.post('/profil/events/create', {
+                onSuccess: () => {
+                    popupOpen = false;
+                    form.reset();
+                }})" class="mt-4">
                 <div class="py-4">
                     <p class="text-base text-gray-700">
                         Wybrana data: <span class="font-semibold">{{ selectedDate }}</span>

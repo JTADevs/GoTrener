@@ -44,7 +44,6 @@ class TrainerController extends Controller
     public function submitReview(Request $request, $id)
     {
         $this->trainer->submitReview($id, $request->all());
-        return Inertia::location('/trainer/' . $id);
     }
 
 }

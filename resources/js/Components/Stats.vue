@@ -1,5 +1,5 @@
 <script setup>
-import { Form, useForm } from '@inertiajs/vue3';
+import { Form, router, useForm } from '@inertiajs/vue3';
 import { dimensions } from '../Data/Dimensions';
 import { computed } from 'vue';
 
@@ -73,7 +73,11 @@ import { computed } from 'vue';
         }
     });
 
-    
+    function resetStats()
+    {
+        if (!confirm("Czy napewno chcesz zresetować statystyki?")) return;
+        router.post('/profil/resetStats');
+    }
 
 </script>
 
@@ -126,6 +130,7 @@ import { computed } from 'vue';
             <p class="text-xl">Możliwość dodania kolejnych pomiarów będzie dostępna po upływie ustalonego okresu <b class="text-[#F5F570] font-bold">{{ periodText }}</b>.</p>
             <p class="text-lg text-gray-400 mt-2">Następna aktualizacja możliwa: {{ nextUpdateDate }}</p>
             <p class="text-lg text-[#F5F570] font-bold">Jest możliwość zmiany okresów po zresetowaniu wszystkich statystyk.</p>
+            <button class="bg-[#F5F570] text-[#241F20] font-bold p-3 rounded-xl mt-4 cursor-pointer" @click="resetStats()" type="button" v-if="user.statsUpdatedAt">Zresetuj statystyki</button>
         </div>
     </div>
 </template>

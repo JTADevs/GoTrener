@@ -21,10 +21,12 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/profil', [UserController::class, 'dashboard'])->name('profile');
     Route::post('/profil/update', [UserController::class, 'update']);
     Route::put('/profil/updateScore', [UserController::class, 'updateScore']);
+    Route::post('/profil/gallery', [UserController::class, 'gallery']);
     Route::get('/profil/calendar', [UserController::class, 'calendar']);
     Route::post('/profil/events/create', [UserController::class, 'createEvent']);
     Route::delete('/profil/events/{id}/delete', [UserController::class, 'deleteEvent']);
     Route::post('/profil/updateStats', [UserController::class, 'updateStats']);
+    Route::post('/profil/resetStats', [UserController::class, 'resetStats']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

@@ -23,6 +23,7 @@ const form = useForm({
     tiktok: user.tiktok ?? '',
     youtube: user.youtube ?? '',
     bio: user.bio ?? '',
+    motto: user.motto ?? '',
     category: user.category ?? [],    
 });
 
@@ -39,6 +40,10 @@ const scoreForm = useForm({
     thighCircumference: user.currentDimensions.thighCircumference ?? '',
     calfCircumference: user.currentDimensions.calfCircumference ?? '',
     ankleCircumference: user.currentDimensions.ankleCircumference ?? '',
+});
+
+const galleryForm = useForm({
+    photos: [],
 });
 
 const BMI = computed(() => {
@@ -83,6 +88,17 @@ const handleImage = (e) => {
         form.imageURL = e.target.result;
     };
     reader.readAsDataURL(file);
+};
+
+const handleGalleryUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length > 10) {
+        alert('Możesz wybrać maksymalnie 10 zdjęć.');
+        e.target.value = '';
+        galleryForm.photos = [];
+        return;
+    }
+    galleryForm.photos = files;
 };
 </script>
 
@@ -147,6 +163,9 @@ const handleImage = (e) => {
                     <div v-if="user.role === 'trainer'" class="mt-4 w-[100%]">
                         <label for="bio" class="block text-sm font-medium text-gray-700 mb-1">Opis</label>
                         <textarea id="bio" v-model="form.bio" placeholder="Napisz coś o sobie..." class="form-input border-1 p-1 rounded-xl text-center h-24 w-[100%]"></textarea>
+
+                        <label for="motto" class="block text-sm font-medium text-gray-700 mb-1 mt-4">Motto</label>
+                        <input type="text" id="motto" v-model="form.motto" placeholder="Twoje motto" class="form-input border-1 p-1 rounded-xl text-center h-24 w-[100%]">
                     </div>
 
                     <!-- Trainer-specific fields -->
@@ -170,6 +189,33 @@ const handleImage = (e) => {
                 </fieldset>
                 <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">Zapisz Dane Osobowe</button>
             </Form>
+            
+            <Form @submit.prevent="galleryForm.post('/profil/gallery', { forceFormData: true, onSuccess: () => galleryForm.reset() })" v-if="user.role === 'trainer'" class="space-y-6">
+                <fieldset class="p-6 border border-gray-200 rounded-lg">
+                    <legend class="px-2 text-lg font-semibold text-gray-700">Galeria / Metamorfozy</legend>
+                    <div class="flex flex-col space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Dodaj zdjęcia (max 10)</label>
+                        <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*"
+                            @change="handleGalleryUpload" 
+                            class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#F5F570] file:text-[#241F20] hover:file:bg-yellow-300 file:cursor-pointer"
+                        />
+                        <div v-if="galleryForm.photos.length > 0" class="text-sm text-gray-600">
+                            Wybrano {{ galleryForm.photos.length }} plików.
+                        </div>
+                    </div>
+                </fieldset>
+                <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors cursor-pointer">Wyślij zdjęcia</button>
+            </Form>
+
+            <div v-if="user.gallery && user.gallery.length > 0" class="p-6 border border-gray-200 rounded-lg">
+                <h3 class="text-lg font-semibold text-gray-700 mb-4 px-2">Twoja galeria</h3>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    <img v-for="(photo, index) in user.gallery" :key="index" :src="photo" alt="Zdjęcie z galerii" class="w-full h-40 object-cover rounded-lg shadow-sm border border-gray-100">
+                </div>
+            </div>
 
             <!-- Body Measurements Form -->
             <Form @submit.prevent="scoreForm.put('/profil/updateScore')" class="space-y-6">
@@ -189,12 +235,6 @@ const handleImage = (e) => {
                             <input type="text" :id="dimension.key" v-model="scoreForm[dimension.key]" :placeholder="dimension.label" class="form-input border-1 p-1 rounded-xl text-center">
                         </div>
                     </div>
-                    <!-- <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div v-for="(label, key) in { weight: 'Waga [kg]', height: 'Wzrost [cm]', neckCircumference: 'Obwód szyi [cm]', chestCircumference: 'Obwód klatki [cm]', waistCircumference: 'Obwód talii [cm]', abdomenCircumference: 'Obwód brzucha [cm]', hipCircumference: 'Obwód bioder [cm]', bicepsCircumference: 'Obwód bicepsa [cm]', wristCircumference: 'Obwód nadgarstka [cm]', thighCircumference: 'Obwód uda [cm]', calfCircumference: 'Obwód łydki [cm]', ankleCircumference: 'Obwód kostki [cm]' }" :key="key">
-                            <label :for="key" class="block text-sm font-medium text-gray-700 mb-1">{{ label }}</label>
-                            <input type="text" :id="key" v-model="scoreForm[key]" :placeholder="label" class="form-input border-1 p-1 rounded-xl text-center">
-                        </div>
-                    </div> -->
                 </fieldset>
                 <button type="submit" class="w-full md:w-auto px-8 py-3 font-bold bg-[#241F20] text-[#F5F570] rounded-lg cursor-pointer hover:bg-gray-800 transition-colors">Zapisz Pomiary</button>
             </Form>
