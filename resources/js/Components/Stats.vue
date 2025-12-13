@@ -8,7 +8,7 @@ import { computed } from 'vue';
     });
 
     const statsForm = useForm({
-        period: '1_week',
+        period: user.statsUpdatePeriod ?? '1_day',
         weight: '',
         height: '',
         neckCircumference: '',

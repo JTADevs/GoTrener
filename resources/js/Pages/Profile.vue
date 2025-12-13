@@ -1,5 +1,6 @@
 <script setup>
     import Calendar from '../Components/Calendar.vue';
+import Chat from '../Components/Chat.vue';
     import ProfileData from '../Components/ProfileData.vue';
     import Stats from '../Components/Stats.vue';
     import Layout from '../Layouts/Layout.vue';
@@ -58,7 +59,7 @@
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
                         <div v-if="activeView === 'treningi'" class="p-6">Moje treningi - wkrótce</div>
-                        <div v-if="activeView === 'komunikator'" class="p-6">Komunikator - wkrótce</div>
+                        <Chat v-if="activeView === 'komunikator'" class="p-6">Komunikator - wkrótce</Chat>
                         <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>
                 </main>
