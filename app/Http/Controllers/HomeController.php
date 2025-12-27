@@ -20,6 +20,5 @@ class HomeController extends Controller
         return Inertia::render('Home', [
             'premiumTrainers' => $this->trainer->getPremiumTrainers(4),
         ]);
-        // return inertia('Home');
     }
 }

@@ -3,15 +3,18 @@
 namespace App\Repository;
 
 use App\Services\FirebaseService;
+use App\Repository\UserInterface;
 use Illuminate\Support\Arr;
 
 class Chat implements ChatInterface
 {
     protected FirebaseService $firebase;
+    protected UserInterface $userRepository;
 
-    public function __construct(FirebaseService $firebase)
+    public function __construct(FirebaseService $firebase, UserInterface $userRepository)
     {
         $this->firebase = $firebase;
+        $this->userRepository = $userRepository;
     }
 
     public function getConversations(string $uid)
@@ -83,5 +86,44 @@ class Chat implements ChatInterface
         });
 
         return $chatList;
+    }
+
+    public function getMentees(string $uid)
+    {
+        $conversations = $this->firebase->firestore()->database()
+            ->collection('chats')
+            ->where('participants', 'array-contains', $uid)
+            ->documents();
+
+        $menteeIds = [];
+        foreach ($conversations as $convo) {
+            if (!$convo->exists()) {
+                continue;
+            }
+
+            $convoData = $convo->data();
+            
+            foreach ($convoData['participants'] as $participant) {
+                if ($participant !== $uid) {
+                    $menteeIds[] = $participant;
+                }
+            }
+        }
+
+        $menteeIds = array_unique($menteeIds);
+        $mentees = [];
+
+        foreach ($menteeIds as $menteeId) {
+            $user = $this->userRepository->getUserByUid($menteeId);
+            if ($user) {
+                $mentees[] = [
+                    'uid' => $user['uid'],
+                    'name' => $user['name'] ?? 'Użytkownik',
+                    'imageUrl' => $user['imageURL'] ?? '/images/no_user.png'
+                ];
+            }
+        }
+
+        return $mentees;
     }
 }

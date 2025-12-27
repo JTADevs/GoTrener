@@ -5,6 +5,7 @@ namespace App\Repository;
 interface UserInterface
 {
     public function dashboard(string $uid);
+    public function getUserByUid(string $uid);
     public function update(array $data);
     public function updateGallery(array $data);
     public function updateScore(array $data);
@@ -12,4 +13,6 @@ interface UserInterface
     public function deleteEvent(string $id);
     public function updateStats(array $data);
     public function resetStats(string $uid);
+    public function addTraining(array $data);
+    public function getTrainings(string $uid);
 }

@@ -26,9 +26,16 @@ class UserController extends Controller
             return redirect()->route('auth')->with(['loginError'=>'Zaloguj się aby otrzymać dostęp do tego zasobu.']);
         }
 
+        if(session('loggedUser.role') == 'trainer')
+        {
+            $mentees = $this->chat->getMentees(session('loggedUser.uid'));
+        }
+
         return Inertia::render('Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
             'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
+            'mentees' => $mentees ?? [],
+            'trainings' => $this->user->getTrainings(session('loggedUser.uid')),
             'view' => $request->query('view'),
         ]);
     }
@@ -97,5 +104,10 @@ class UserController extends Controller
     public function resetStats()
     {
         $this->user->resetStats(session('loggedUser.uid'));
+    }
+
+    public function addTraining(Request $request)
+    {
+        $this->user->addTraining($request->all());
     }
 }

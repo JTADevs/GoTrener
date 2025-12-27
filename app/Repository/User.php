@@ -58,6 +58,22 @@ class User implements UserInterface
         return $user;
     }
 
+    public function getUserByUid(string $uid)
+    {
+        $user = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->snapshot()
+            ->data();
+
+        if ($user !== null) {
+            $user['uid'] = $uid;
+        }
+
+        return $user;
+    }
+
     public function update(array $data)
     {
         $this->firebase->firestore()
@@ -205,4 +221,61 @@ class User implements UserInterface
         return true;
     }
 
+    public function addTraining(array $data)
+    {
+        $userUid = $data['uid'];
+        $trainerUid = $data['trainerUid'];
+
+        $trainingData = [
+            'title'       => $data['title'],
+            'date'        => $data['date'],
+            'startTime'   => $data['startTime'],
+            'endTime'     => $data['endTime'],
+            'description' => $data['description'],
+            'created_at'  => now(),
+            'status'      => 'planned',
+        ];
+
+        $this->firebase->firestore()->database()
+            ->collection('users')
+            ->document($userUid)
+            ->collection('trainings')
+            ->add($trainingData + ['uid' => $trainerUid]);
+
+        $this->firebase->firestore()->database()
+            ->collection('users')
+            ->document($trainerUid)
+            ->collection('trainings')
+            ->add($trainingData + ['uid' => $userUid]);
+
+        return true;
+    }
+
+    public function getTrainings(string $uid)
+    {
+        $trainingsSnapshot = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->collection('trainings')
+            ->orderBy('date', 'desc')
+            ->documents();
+
+        $trainings = [];
+        foreach ($trainingsSnapshot as $document) {
+            $training = $document->data();
+            $training['id'] = $document->id();
+
+            if (isset($training['uid'])) {
+                $otherUser = $this->getUserByUid($training['uid']);
+                if ($otherUser) {
+                    $training['otherUser'] = $otherUser;
+                }
+            }
+            
+            $trainings[] = $training;
+        }
+
+        return $trainings;
+    }
 }
