@@ -36,7 +36,6 @@
         premiumTrainers: Object,
     });
 
-    console.log(premiumTrainers);
 </script>
 
 <template>

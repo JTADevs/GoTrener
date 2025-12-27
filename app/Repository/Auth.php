@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Mail\AccountVerification;
 use Illuminate\Support\Facades\Http;
 use App\Services\FirebaseService;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -41,13 +42,17 @@ class Auth implements AuthInterface
 
         $userData = $userDoc->exists() ? $userDoc->data() : [];
 
+        $uid = $loginData['localId'];
+
         if($userData['email_verified'] === false) {
             return ['error' => 'Konto nie zostało zweryfikowane. Sprawdź swoją skrzynkę e-mail.'];
         }
 
+        $customToken = $this->firebase->auth()->createCustomToken($uid);
+
         return [
-            'token' => $loginData['idToken'],
-            'uid'   => $loginData['localId'],
+            'customToken' => $customToken->toString(),
+            'uid'   => $uid,
             'email' => $loginData['email'],
             'name'  => $userData['name'] ?? null,
             'role'  => $userData['role'] ?? 'client',

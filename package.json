@@ -17,6 +17,7 @@
     "dependencies": {
         "@inertiajs/vue3": "^2.2.18",
         "@vitejs/plugin-vue": "^6.0.2",
+        "firebase": "^12.6.0",
         "vue": "^3.5.25"
     }
 }

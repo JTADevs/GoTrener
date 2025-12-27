@@ -25,6 +25,10 @@ class User implements UserInterface
             ->snapshot()
             ->data();
 
+        if ($user !== null) {
+            $user['uid'] = $uid;
+        }
+
         $user = array_merge($user, ['currentDimensions' => $this->firebase->firestore()
                 ->database()
                 ->collection('users')

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Repository\UserInterface;
+use App\Repository\ChatInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -11,9 +12,11 @@ use Illuminate\Support\Facades\Storage;
 class UserController extends Controller
 {
     protected $user;
-    public function __construct(UserInterface $user)
+    protected $chat;
+    public function __construct(UserInterface $user, ChatInterface $chat)
     {
         $this->user = $user;
+        $this->chat = $chat;
     }
 
     public function dashboard(Request $request)
@@ -25,7 +28,14 @@ class UserController extends Controller
 
         return Inertia::render('Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
+            'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
+            'view' => $request->query('view'),
         ]);
+    }
+
+    public function fetchConversations()
+    {
+        return response()->json($this->chat->getConversations(session('loggedUser.uid')));
     }
 
     public function update(Request $request)

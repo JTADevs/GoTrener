@@ -1,17 +1,18 @@
 <script setup>
     import Calendar from '../Components/Calendar.vue';
-import Chat from '../Components/Chat.vue';
     import ProfileData from '../Components/ProfileData.vue';
     import Stats from '../Components/Stats.vue';
+    import Communicator from '../Components/Communicator.vue';
     import Layout from '../Layouts/Layout.vue';
     import { ref } from 'vue';
 
-    defineProps({
+    const props = defineProps({
         user: Object,
+        view: String,
     });
 
     const sidebarOpen = ref(false);
-    const activeView = ref('profil');
+    const activeView = ref(props.view === 'komunikator' ? 'komunikator' : 'profil');
 </script>
 
 <template>
@@ -59,7 +60,7 @@ import Chat from '../Components/Chat.vue';
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
                         <div v-if="activeView === 'treningi'" class="p-6">Moje treningi - wkrótce</div>
-                        <Chat v-if="activeView === 'komunikator'" class="p-6">Komunikator - wkrótce</Chat>
+                        <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>
                 </main>

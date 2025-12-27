@@ -1,5 +1,6 @@
 <script setup>
     import Layout from '../Layouts/Layout.vue';
+    import Chat from '../Components/Chat.vue';
     import { computed, ref } from 'vue';
     import { useForm, usePage } from '@inertiajs/vue3';
 
@@ -9,6 +10,8 @@
 
     const page = usePage();
     const loggedUser = computed(() => page.props.loggedUser ?? {});
+
+    const chatVisible = ref(false);
 
     const reviewForm = useForm({
         rating: 0,
@@ -26,7 +29,6 @@
     const averageRating = computed(() => {
         const reviews = trainer.reviews;
         if (!reviews || !Array.isArray(reviews) || reviews.length === 0) {
-            console.log('Brak opinii dla tego trenera.')
             return 0;
         }
         
@@ -85,6 +87,20 @@
                             <p v-if="trainer.motto" class="mt-4 text-gray-600 italic font-semibold text-center">
                                 Motto: "{{ trainer.motto }}"
                             </p>
+                        </div>
+
+                        <!-- Chat Card -->
+                        <div v-if="loggedUser.role === 'client' && loggedUser.uid !== trainer.uid" class="bg-white p-6 rounded-lg shadow-lg">
+                            <button @click="chatVisible = !chatVisible" class="w-full px-6 py-3 bg-yellow-300 text-[#241F20] font-bold rounded-full transition-all duration-300 shadow-lg mb-4 cursor-pointer">
+                                <i class="fa-solid fa-comments mr-2"></i>
+                                {{ chatVisible ? 'Ukryj czat' : 'Napisz wiadomość' }}
+                            </button>
+                            <div v-if="chatVisible">
+                                <Chat 
+                                    :current-user="{ id: loggedUser.uid, ...loggedUser }" 
+                                    :recipient-user="{ id: trainer.uid, ...trainer }" 
+                                />
+                            </div>
                         </div>
                         
                         <!-- Categories -->

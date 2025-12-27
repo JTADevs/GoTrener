@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use App\Repository\Auth;
 use App\Repository\AuthInterface;
+use App\Repository\Chat;
+use App\Repository\ChatInterface;
 use App\Repository\Trainer;
 use App\Repository\TrainerInterface;
 use App\Repository\User;
@@ -20,6 +22,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(AuthInterface::class, Auth::class);
         $this->app->singleton(UserInterface::class, User::class);
         $this->app->singleton(TrainerInterface::class, Trainer::class);
+        $this->app->singleton(ChatInterface::class, Chat::class);
     }
 
     /**

@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ChatController;
 use App\Http\Middleware\EnsureUserIsLogged;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -27,6 +28,11 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::delete('/profil/events/{id}/delete', [UserController::class, 'deleteEvent']);
     Route::post('/profil/updateStats', [UserController::class, 'updateStats']);
     Route::post('/profil/resetStats', [UserController::class, 'resetStats']);
+
+    Route::get('/profil/communicator', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/conversations', [ChatController::class, 'getConversations']);
+    Route::get('/profile/conversations', [UserController::class, 'fetchConversations'])->name('profile.conversations');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });
