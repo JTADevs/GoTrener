@@ -11,6 +11,7 @@ use App\Http\Middleware\EnsureUserIsLogged;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/auth', [AuthController::class, 'index'])->name('auth');
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/login_google', [AuthController::class, 'login_google']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/confirm_account', [AuthController::class, 'confirm_account']);
 Route::get('/logout', [AuthController::class, 'logout']);
@@ -20,6 +21,7 @@ Route::get('/trainer/{id}', [TrainerController::class, 'show']);
 
 Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/profil', [UserController::class, 'dashboard'])->name('profile');
+    Route::post('/set_role', [AuthController::class, 'setRole']);
     Route::post('/profil/update', [UserController::class, 'update']);
     Route::put('/profil/updateScore', [UserController::class, 'updateScore']);
     Route::post('/profil/gallery', [UserController::class, 'gallery']);

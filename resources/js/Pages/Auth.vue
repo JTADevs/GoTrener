@@ -1,6 +1,7 @@
 <script setup>
     import Layout from '../Layouts/Layout.vue';
-    import { Form, useForm, usePage } from '@inertiajs/vue3';
+    import { Form, useForm, usePage, router } from '@inertiajs/vue3';
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
     const formLogin = useForm({
         loginEmail: '',
@@ -15,6 +16,20 @@
     })
 
     const page = usePage();
+
+    const handleGoogleLogin = () => {
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        signInWithPopup(auth, provider)
+            .then((result) => {
+                result.user.getIdToken().then((token) => {
+                    router.post('/login_google', { token: token });
+                });
+            }).catch((error) => {
+                console.error("Błąd logowania Google:", error);
+            });
+    }
 </script>
 
 <template>  
@@ -39,7 +54,7 @@
                 <hr class="my-2">
                 <div class="flex flex-col items-center justify-center *:my-1 *:rounded-xl *:w-[200px] *:cursor-pointer *:p-2">
                     <button class="flex flex-row items-center justify-center border-1 p-1"><img src="../../../public/images/apple-logo.svg" alt="apple" class="w-[20px] mr-2"> <span>Zaloguj przez Apple</span></button>
-                    <button class="flex flex-row items-center justify-center border-1 p-1"><img src="../../../public/images/google-logo.webp" alt="apple" class="w-[20px] mr-2"> <span>Zaloguj przez Google</span></button>
+                    <button class="flex flex-row items-center justify-center border-1 p-1" @click="handleGoogleLogin"><img src="../../../public/images/google-logo.webp" alt="google" class="w-[20px] mr-2"> <span>Zaloguj przez Google</span></button>
                 </div>
             </div>
 

@@ -47,6 +47,18 @@ class AuthController extends Controller
         return redirect('/');
     }
 
+    public function login_google(Request $request)
+    { 
+        $message = $this->auth->login_google($request->all());
+
+        if(isset($message['error'])) {
+            return redirect()->route('auth')->with(['loginError' => $message['error']]);
+        }
+
+        session()->put('loggedUser', $message);
+        return redirect('/');
+    }
+
     public function register(Request $request)
     {
         $validate = $request->validate([
@@ -96,4 +108,28 @@ class AuthController extends Controller
         return Inertia::location('/auth');
     }
 
+    public function setRole(Request $request)
+    {
+        $request->validate([
+            'role' => 'required|in:client,trainer',
+        ]);
+
+        $uid = session('loggedUser.uid');
+        if (!$uid) {
+            return redirect()->route('auth');
+        }
+
+        $result = $this->auth->setRole($uid, $request->role);
+
+        if (isset($result['error'])) {
+            return redirect()->back()->with(['error' => $result['error']]);
+        }
+
+        // Aktualizacja roli w sesji, aby odświeżyć widok bez ponownego logowania
+        $user = session('loggedUser');
+        $user['role'] = $request->role;
+        session()->put('loggedUser', $user);
+
+        return redirect('/');
+    }
 }

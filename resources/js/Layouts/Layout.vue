@@ -4,6 +4,7 @@
     import { onMounted, computed, watch, ref } from 'vue';
     import { usePage } from '@inertiajs/vue3';
     import { getAuth, signInWithCustomToken, onAuthStateChanged } from 'firebase/auth';
+    import ForceRoleSelect from "../Components/ForceRoleSelect.vue";
     // import { firebaseUser } from '../firebase.js';
 
     const page = usePage();
@@ -34,7 +35,10 @@
 </script>
 
 <template>
-    <Header />
-    <slot />
-    <Footer />
+    <div v-if="!loggedUser || loggedUser.role!=='brak'">
+        <Header/>
+        <slot/>
+        <Footer/>
+    </div>
+    <ForceRoleSelect v-if="loggedUser && loggedUser.role==='brak'"/>
 </template>
