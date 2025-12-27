@@ -64,7 +64,7 @@
                 <div class="relative bg-white shadow-xl rounded-lg -mt-16 mb-8 overflow-hidden">
                     <div class="h-48 bg-cover bg-center" style="background-image: url('/images/gym3.jpg');"></div>
                     <div class="absolute top-24 left-1/2 -translate-x-1/2">
-                        <img :src="trainer.imageURL || '/images/no_user.png'" alt="zdjecie profilowe" class="w-40 h-40 rounded-full object-cover border-8 border-white shadow-lg cursor-pointer" @click="selectedImage = trainer.imageURL || '/images/no_user.png'" />
+                        <img :src="trainer.imageURL || '/images/no_user.png'" alt="zdjecie profilowe" class="w-40 h-40 rounded-full object-cover border-8 border-white bg-white shadow-lg cursor-pointer" @click="selectedImage = trainer.imageURL || '/images/no_user.png'" />
                     </div>
                     <div class="text-center pt-24 pb-8">
                         <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight">{{ trainer.name }}</h1>
