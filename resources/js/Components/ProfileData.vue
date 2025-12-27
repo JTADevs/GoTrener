@@ -1,8 +1,9 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { Form, useForm } from '@inertiajs/vue3';
 import { categories } from '../Data/Categories.js';
 import { dimensions } from '../Data/Dimensions.js';
+import cities from '../Data/Cities.json';
 
 const { user } = defineProps({ 
     user: Object,
@@ -45,6 +46,8 @@ const scoreForm = useForm({
 const galleryForm = useForm({
     photos: [],
 });
+
+const citySuggestions = ref([]);
 
 const BMI = computed(() => {
     const w = parseFloat(scoreForm.weight);
@@ -100,6 +103,36 @@ const handleGalleryUpload = (e) => {
     }
     galleryForm.photos = files;
 };
+
+const handleCityChange = (e) => {
+    const query = e.target.value;
+
+    if (query.length < 2) {
+        citySuggestions.value = [];
+        return;
+    }
+
+    const replacements = {
+        'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+        'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N', 'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
+    };
+
+    const normalize = (text) => 
+        text.split('').map(char => replacements[char] || char).join('').toLowerCase();
+
+    const normalizedQuery = normalize(query);
+
+    const seen = new Set();
+    const filtered = cities.filter(city => {
+        if (normalize(city.Name).includes(normalizedQuery) && !seen.has(city.Name)) {
+            seen.add(city.Name);
+            return true;
+        }
+        return false;
+    });
+
+    citySuggestions.value = filtered.slice(0, 15);
+}
 </script>
 
 <template>
@@ -142,7 +175,10 @@ const handleGalleryUpload = (e) => {
                         </div>
                         <div>
                             <label for="city" class="block text-sm font-medium text-gray-700 mb-1">Miasto</label>
-                            <input type="text" id="city" v-model="form.city" placeholder="Miasto" class="form-input border-1 p-1 rounded-xl text-center">
+                            <input type="text" id="city" v-model="form.city" @input="handleCityChange" list="city-suggestions" placeholder="Miasto" class="form-input border-1 p-1 rounded-xl text-center">
+                            <datalist id="city-suggestions">
+                                <option v-for="city in citySuggestions" :key="city.Id" :value="city.Name" class="bg-[#241F20]"></option>
+                            </datalist>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Płeć</label>
