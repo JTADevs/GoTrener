@@ -36,6 +36,7 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/profile/conversations', [UserController::class, 'fetchConversations'])->name('profile.conversations');
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::post('/addTraining', [UserController::class, 'addTraining']);
+    Route::post('/cancelTraining', [UserController::class, 'cancelTraining']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

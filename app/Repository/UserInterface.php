@@ -15,4 +15,5 @@ interface UserInterface
     public function resetStats(string $uid);
     public function addTraining(array $data);
     public function getTrainings(string $uid);
+    public function cancelTraining(array $data);
 }

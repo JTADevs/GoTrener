@@ -110,4 +110,9 @@ class UserController extends Controller
     {
         $this->user->addTraining($request->all());
     }
+
+    public function cancelTraining(Request $request)
+    {
+        $this->user->cancelTraining($request->all());
+    }
 }

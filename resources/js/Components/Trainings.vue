@@ -66,12 +66,23 @@ const submitTraining = () => {
     });
 };
 
-const cancelTraining = (id) => {
+const cancelTraining = (id, uid) => {
     if (confirm('Czy na pewno chcesz anulować ten trening?')) {
-        router.post('/cancelTraining', { id: id }, {
+        router.post('/cancelTraining', { id: id, uid: uid }, {
             preserveScroll: true,
         });
     }
+};
+
+const getTrainingStatus = (training) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const trainingDate = new Date(training.date);
+
+    if (training.status === 'Planowany' && trainingDate < today) {
+        return 'Ukończony';
+    }
+    return training.status;
 };
 
 </script>
@@ -159,11 +170,11 @@ const cancelTraining = (id) => {
                             <p class="text-sm text-gray-600">Godzina: {{ training.startTime }} - {{ training.endTime }}</p>
                             <p v-if="training.description" class="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{{ training.description }}</p>
                              <p class="text-sm text-gray-600 mt-2">Status: <span class="font-medium" :class="{
-                                'text-green-600': training.status === 'completed',
-                                'text-blue-600': training.status === 'planned',
-                                'text-red-600': training.status === 'cancelled'
-                            }">{{ training.status }}</span></p>
-                            <button v-if="training.status === 'planned'" @click="cancelTraining(training.id)" class="mt-2 text-sm text-red-500 hover:text-red-700 font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
+                                'text-green-600': getTrainingStatus(training) === 'Ukończony',
+                                'text-blue-600': getTrainingStatus(training) === 'Planowany',
+                                'text-red-600': getTrainingStatus(training) === 'Anulowany'
+                            }">{{ getTrainingStatus(training) }}</span></p>
+                            <button v-if="getTrainingStatus(training) === 'Planowany'" @click="cancelTraining(training.id, training.uid)" class="mt-2 text-sm text-red-500 hover:text-red-700 font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
                                 <i class="fa-solid fa-ban mr-1"></i> Anuluj
                             </button>
                         </div>

@@ -223,7 +223,7 @@ class User implements UserInterface
 
     public function addTraining(array $data)
     {
-        $userUid = $data['uid'];
+        $userUid = $data['uid']; // This is the client
         $trainerUid = $data['trainerUid'];
 
         $trainingData = [
@@ -233,20 +233,22 @@ class User implements UserInterface
             'endTime'     => $data['endTime'],
             'description' => $data['description'],
             'created_at'  => now(),
-            'status'      => 'planned',
+            'status'      => 'Planowany',
         ];
 
+        // Add to client's collection
         $this->firebase->firestore()->database()
             ->collection('users')
             ->document($userUid)
             ->collection('trainings')
-            ->add($trainingData + ['uid' => $trainerUid]);
+            ->add($trainingData + ['uid' => $trainerUid]); // Add trainer's UID
 
+        // Add to trainer's collection
         $this->firebase->firestore()->database()
             ->collection('users')
             ->document($trainerUid)
             ->collection('trainings')
-            ->add($trainingData + ['uid' => $userUid]);
+            ->add($trainingData + ['uid' => $userUid]); // Add client's UID
 
         return true;
     }
@@ -277,5 +279,48 @@ class User implements UserInterface
         }
 
         return $trainings;
+    }
+
+    public function cancelTraining(array $data)
+    {
+        $trainingId = $data['id'];
+        $otherUserUid = $data['uid'];
+        $cancellerUid = session('loggedUser.uid');
+
+        // Update the canceller's training document
+        $cancellerTrainingRef = $this->firebase->firestore()->database()
+            ->collection('users')
+            ->document($cancellerUid)
+            ->collection('trainings')
+            ->document($trainingId);
+
+        $cancellerTrainingDoc = $cancellerTrainingRef->snapshot();
+
+        if (!$cancellerTrainingDoc->exists()) {
+            // This shouldn't happen if the UI is correct
+            return false;
+        }
+
+        $cancellerTrainingRef->set(['status' => 'Anulowany'], ['merge' => true]);
+
+        // Now, find and update the other user's training document.
+        $trainingData = $cancellerTrainingDoc->data();
+
+        $otherUserTrainingsQuery = $this->firebase->firestore()->database()
+            ->collection('users')
+            ->document($otherUserUid)
+            ->collection('trainings')
+            ->where('date', '==', $trainingData['date'])
+            ->where('startTime', '==', $trainingData['startTime'])
+            ->where('endTime', '==', $trainingData['endTime'])
+            ->where('uid', '==', $cancellerUid);
+
+        $otherUserTrainings = $otherUserTrainingsQuery->documents();
+
+        foreach ($otherUserTrainings as $docToUpdate) {
+            $docToUpdate->reference()->set(['status' => 'Anulowany'], ['merge' => true]);
+        }
+
+        return true;
     }
 }
