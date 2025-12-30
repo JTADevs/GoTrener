@@ -3,6 +3,7 @@
     import { Form, Link, router, useForm } from '@inertiajs/vue3';
     import { categories } from '../Data/Categories.js';
     import { ref, computed, onMounted } from 'vue';
+    import cities from '../Data/Cities.json';
 
     const { trainers, filters } = defineProps({
         trainers: Object,
@@ -11,6 +12,7 @@
 
     const showCategories = ref(false);
     const categorySearch = ref('');
+    const citySuggestions = ref([]);
 
     const filteredCategories = computed(() => {
         return categories.filter(category =>
@@ -58,6 +60,36 @@
             replace: true,
         });
     }
+
+    const handleCityChange = (e) => {
+        const query = e.target.value;
+
+        if (query.length < 2) {
+            citySuggestions.value = [];
+            return;
+        }
+
+        const replacements = {
+            'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
+            'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N', 'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
+        };
+
+        const normalize = (text) => 
+            text.split('').map(char => replacements[char] || char).join('').toLowerCase();
+
+        const normalizedQuery = normalize(query);
+
+        const seen = new Set();
+        const filtered = cities.filter(city => {
+            if (normalize(city.Name).includes(normalizedQuery) && !seen.has(city.Name)) {
+                seen.add(city.Name);
+                return true;
+            }
+            return false;
+        });
+
+        citySuggestions.value = filtered.slice(0, 15);
+    }
 </script>
 
 <template>
@@ -72,8 +104,11 @@
                             <input type="text" name="fullname" v-model="search.fullname" placeholder="Imię i nazwisko" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
                         </div>
                         <div class="relative flex-grow w-full min-w-0">
-                            <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                            <input type="text" name="location" v-model="search.location" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow"/>
+                            <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
+                            <input type="text" id="city" v-model="search.location" @input="handleCityChange" list="city-suggestions" placeholder="Miejscowość" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow bg-white/90 text-gray-800 placeholder-gray-500">
+                            <datalist id="city-suggestions">
+                                <option v-for="city in citySuggestions" :key="city.Id" :value="city.Name" class="bg-[#241F20]"></option>
+                            </datalist>
                         </div>
                         <div class="relative flex-grow w-full min-w-0">
                             <i class="fa-solid fa-tags absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
