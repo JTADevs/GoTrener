@@ -8,6 +8,7 @@ use App\Repository\ChatInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Spatie\LaravelPdf\Facades\Pdf;
 
 class UserController extends Controller
 {
@@ -125,5 +126,11 @@ class UserController extends Controller
     public function deleteDiet($id)
     {
         $this->user->deleteDiet($id);
+    }
+
+    public function downloadDietPDF($id)
+    {
+        $data = $this->user->downloadDietPDF($id);
+        return Pdf::view('diet', ['diet' => $data])->download('diet.pdf');
     }
 }

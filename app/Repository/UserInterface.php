@@ -19,4 +19,5 @@ interface UserInterface
     public function addDiet(array $data);
     public function getDiets(string $uid);
     public function deleteDiet(string $id);
+    public function downloadDietPDF(string $id);
 }

@@ -208,19 +208,23 @@ import { router } from '@inertiajs/vue3';
             }
         });
     }
-const deleteDiet = (dietId) => {
-    if (confirm('Czy na pewno chcesz usunąć tę dietę?')) {
-        router.delete(`/deleteDiet/${dietId}`, {
-            preserveScroll: true,
-            onSuccess: () => {
-                // Diets are refreshed from props
-            },
-            onError: (errors) => {
-                alert('Wystąpił błąd podczas usuwania diety.');
-            }
-        });
+    const deleteDiet = (dietId) => {
+        if (confirm('Czy na pewno chcesz usunąć tę dietę?')) {
+            router.delete(`/deleteDiet/${dietId}`, {
+                preserveScroll: true,
+                onSuccess: () => {
+
+                },
+                onError: (errors) => {
+                    alert('Wystąpił błąd podczas usuwania diety.');
+                }
+            });
+        }
+    };
+
+    const downloadPDF = (id) => {
+        window.location.href = `/diet-downloadPDF/${id}`;
     }
-};
 </script>
 
 <template>
@@ -545,7 +549,8 @@ const deleteDiet = (dietId) => {
                         <div class="flex justify-between items-center cursor-pointer">
                             <div>
                                 <h3 class="font-bold text-lg text-gray-800">{{ diet.dietDescription }}</h3>
-                                <p class="text-sm text-gray-600">Kaloryczność: {{ diet.caloricValue }}</p>
+                                <p class="text-sm text-gray-600">Utworzono: {{ diet.created_at.split('T')[0] }}</p>
+                                <p class="text-sm text-gray-600" v-if="diet.caloricValue">Kaloryczność: {{ diet.caloricValue }}</p>
                                 <p class="text-sm text-gray-600" v-if="props.user.role !== 'trainer'">Trener: {{ diet.trainerName }}</p>
                                 <p class="text-sm text-gray-600" v-if="props.user.role !== 'client'">Podopieczny: {{ diet.menteeName }}</p>
                             </div>
@@ -601,6 +606,9 @@ const deleteDiet = (dietId) => {
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                        <div class="mt-4 flex justify-center">
+                            <button class="bg-yellow-500 text-gray-700 font-semibold p-2 rounded hover:bg-yellow-400 cursor-pointer" @click="downloadPDF(diet.id)">Pobierz PDF</button>
                         </div>
                     </div>
                 </div>

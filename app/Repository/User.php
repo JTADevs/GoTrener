@@ -387,4 +387,21 @@ class User implements UserInterface
             ->delete();
         return true;
     }
+
+    public function downloadDietPDF(string $id)
+    {
+        $dietDoc = $this->firebase->firestore()
+            ->database()
+            ->collection('diets')
+            ->document($id)
+            ->snapshot();
+
+        if (!$dietDoc->exists()) {
+            return null;
+        }
+
+        $dietData = $dietDoc->data();
+
+        return $dietData;
+    }
 }
