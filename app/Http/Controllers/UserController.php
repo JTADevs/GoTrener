@@ -36,6 +36,7 @@ class UserController extends Controller
             'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
             'mentees' => $mentees ?? [],
             'trainings' => $this->user->getTrainings(session('loggedUser.uid')),
+            'diets' => $this->user->getDiets(session('loggedUser.uid')),
             'view' => $request->query('view'),
         ]);
     }
@@ -114,5 +115,15 @@ class UserController extends Controller
     public function cancelTraining(Request $request)
     {
         $this->user->cancelTraining($request->all());
+    }
+
+    public function addDiet(Request $request)
+    {
+        $this->user->addDiet($request->all());
+    }
+
+    public function deleteDiet($id)
+    {
+        $this->user->deleteDiet($id);
     }
 }

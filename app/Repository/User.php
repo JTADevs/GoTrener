@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Services\FirebaseService;
 use Google\Cloud\Firestore\FieldValue;
+use Illuminate\Support\Str;
 
 class User implements UserInterface
 {
@@ -321,6 +322,69 @@ class User implements UserInterface
             $docToUpdate->reference()->set(['status' => 'Anulowany'], ['merge' => true]);
         }
 
+        return true;
+    }
+
+    public function addDiet(array $data)
+    {
+        $trainerUid = $data['trainerUid'];
+        $menteeUid = $data['menteeUid'];
+
+        $trainingData = [
+            'trainerName' => $data['trainerName'],
+            'menteeName' => $data['menteeName'],
+            'dietDescription' => $data['dietDescription'],
+            'caloricValue' => $data['caloricValue'],
+            'created_at' => now(),
+        ];
+        
+        $daysOfWeek = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+
+        foreach ($daysOfWeek as $day) {
+            $trainingData[$day] = [
+                'breakfast' => $data[$day]['breakfast'],
+                'secondBreakfast' => $data[$day]['secondBreakfast'],
+                'lunch' => $data[$day]['lunch'],
+                'afternoonSnack' => $data[$day]['afternoonSnack'],
+                'dinner' => $data[$day]['dinner'],
+                'macro' => $data[$day]['macro'],
+            ];
+        }
+
+        $this->firebase->firestore()->database()
+            ->collection('diets')
+            ->document(Str::uuid() . '_' . $trainerUid . '_' . $menteeUid)
+            ->set($trainingData);
+
+        return true;
+    }
+
+    public function getDiets(string $uid)
+    {
+        $dietsSnapshot = $this->firebase->firestore()
+            ->database()
+            ->collection('diets')
+            ->documents();
+
+        $diets = [];
+        foreach ($dietsSnapshot as $document) {
+            if (str_contains($document->id(), $uid)) {
+                $diet = $document->data();
+                $diet['id'] = $document->id();
+                $diets[] = $diet;
+            }
+        }
+
+        return $diets;
+    }
+
+    public function deleteDiet(string $id)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('diets')
+            ->document($id)
+            ->delete();
         return true;
     }
 }

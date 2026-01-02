@@ -37,6 +37,8 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
     Route::post('/addTraining', [UserController::class, 'addTraining']);
     Route::post('/cancelTraining', [UserController::class, 'cancelTraining']);
+    Route::post('/addDiet', [UserController::class, 'addDiet']);
+    Route::delete('/deleteDiet/{id}', [UserController::class, 'deleteDiet']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

@@ -16,4 +16,7 @@ interface UserInterface
     public function addTraining(array $data);
     public function getTrainings(string $uid);
     public function cancelTraining(array $data);
+    public function addDiet(array $data);
+    public function getDiets(string $uid);
+    public function deleteDiet(string $id);
 }

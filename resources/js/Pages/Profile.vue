@@ -6,12 +6,14 @@
     import Layout from '../Layouts/Layout.vue';
     import { ref } from 'vue';
     import Trainings from '../Components/Trainings.vue';
+    import Diet from '../Components/Diet.vue';
 
     const props = defineProps({
         user: Object,
         view: String,
         mentees: Array,
         trainings: Array,
+        diets: Array,
     });
 
     const sidebarOpen = ref(false);
@@ -46,6 +48,10 @@
                             <i class="fa-solid fa-dumbbell w-6 text-center"></i>
                             <span class="mx-4 font-medium">Moje treningi</span>
                         </button>
+                        <button @click="activeView = 'dieta'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'dieta' ? 'active-link' : 'hover:bg-gray-700'">
+                            <i class="fa-solid fa-utensils w-6 text-center"></i>
+                            <span class="mx-4 font-medium">Moje diety</span>
+                        </button>
                         <button @click="activeView = 'komunikator'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-comments w-6 text-center"></i>
                             <span class="mx-4 font-medium">Komunikator</span>
@@ -62,7 +68,8 @@
                     <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden p-2">
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
-                        <Trainings v-if="activeView === 'treningi'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"></Trainings>
+                        <Trainings v-if="activeView === 'treningi'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
+                        <Diet v-if="activeView === 'dieta'" class="p-6" :user="user" :mentees="mentees" :diets="diets"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>

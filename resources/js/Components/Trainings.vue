@@ -89,7 +89,6 @@ const getTrainingStatus = (training) => {
 
 <template>
     <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-        <h1 class="text-3xl font-bold mb-6 text-gray-800">Moje Treningi</h1>
         <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto" v-if="props.user.role === 'trainer'">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Dodaj nowy trening</h2>
             <form @submit.prevent="submitTraining">
@@ -102,7 +101,7 @@ const getTrainingStatus = (training) => {
                         placeholder="Wpisz imię, aby wyszukać..."
                         class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 mb-3"
                     />
-                    <div class="max-h-60 overflow-y-auto border border-gray-300 rounded-md bg-gray-50">
+                    <div class="max-h-40 overflow-y-auto border border-gray-300 rounded-md bg-gray-50">
                         <ul v-if="filteredMentees.length > 0">
                             <li
                                 v-for="mentee in filteredMentees"
