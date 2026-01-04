@@ -9,15 +9,18 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelPdf\Facades\Pdf;
+use App\Services\FirebaseService;
 
 class UserController extends Controller
 {
     protected $user;
     protected $chat;
-    public function __construct(UserInterface $user, ChatInterface $chat)
+    protected $firebase;
+    public function __construct(UserInterface $user, ChatInterface $chat, FirebaseService $firebase)
     {
         $this->user = $user;
         $this->chat = $chat;
+        $this->firebase = $firebase;
     }
 
     public function dashboard(Request $request)
@@ -56,8 +59,7 @@ class UserController extends Controller
             $uid = session('loggedUser.uid');
             $extension = $file->getClientOriginalExtension();
             $filename = "{$uid}." . $extension;
-            $path = $file->storeAs('avatars', $filename, 'public');
-            $data['imageURL'] = asset('storage/' . $path);
+            $data['imageURL'] = $this->firebase->uploadFile($file, "avatars/{$filename}");
         }
         
         $this->user->update($data);
@@ -69,11 +71,10 @@ class UserController extends Controller
         $gallery = [];
         if ($request->hasFile('photos')) {
             $uid = session('loggedUser.uid');
-            Storage::disk('public')->deleteDirectory('gallery/' . $uid);
+            $this->firebase->deleteDirectory('gallery/' . $uid);
             foreach ($request->file('photos') as $photo) {
                 $filename = uniqid() . '.' . $photo->getClientOriginalExtension();
-                $path = $photo->storeAs('gallery/' . $uid, $filename, 'public');
-                $gallery[] = asset('storage/' . $path);
+                $gallery[] = $this->firebase->uploadFile($photo, "gallery/{$uid}/{$filename}");
             }
         }
         $this->user->updateGallery(['gallery' => $gallery]);

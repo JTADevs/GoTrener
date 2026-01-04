@@ -132,7 +132,7 @@ return [
                  * https://example.page.link
                  */
 
-                'default_domain' => env('FIREBASE_DYNAMIC_LINKS_DEFAULT_DOMAIN'),
+                'default_domain' => env('FIREBASE_DYNAMIC_LINKS_DOMAIN'),
             ],
 
             /*
@@ -150,7 +150,7 @@ return [
                  * override it here.
                  */
 
-                'default_bucket' => env('FIREBASE_STORAGE_DEFAULT_BUCKET'),
+                'default_bucket' => env('FIREBASE_STORAGE_BUCKET'),
 
             ],
 
