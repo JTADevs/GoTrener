@@ -18,6 +18,17 @@ const trainingDate = ref('');
 const trainingStartTime = ref('');
 const trainingEndTime = ref('');
 const trainingDescription = ref('');
+const trainingPlan = ref('');
+
+const selectedTrainingForDetails = ref(null);
+
+const openDetails = (training) => {
+    selectedTrainingForDetails.value = training;
+};
+
+const closeDetails = () => {
+    selectedTrainingForDetails.value = null;
+};
 
 const today = new Date().toISOString().split('T')[0];
 
@@ -50,7 +61,8 @@ const submitTraining = () => {
         date: trainingDate.value,
         startTime: trainingStartTime.value,
         endTime: trainingEndTime.value,
-        description: trainingDescription.value
+        description: trainingDescription.value,
+        plan: trainingPlan.value
     };
 
     router.post('/addTraining', trainingData, {
@@ -62,8 +74,13 @@ const submitTraining = () => {
             trainingStartTime.value = '';
             trainingEndTime.value = '';
             trainingDescription.value = '';
+            trainingPlan.value = '';
         }
     });
+};
+
+const generateTrainingPDF = (id) => {
+    window.location.href = `/training-downloadPDF/${id}`;
 };
 
 const cancelTraining = (id, uid) => {
@@ -124,7 +141,7 @@ const getTrainingStatus = (training) => {
 
                 <!-- Training Details -->
                 <div class="mb-4 border-t pt-6">
-                     <label class="block text-gray-700 text-sm font-bold mb-2">2. Wprowadź szczegóły treningu</label>
+                    <label class="block text-gray-700 text-sm font-bold mb-2">2. Wprowadź szczegóły treningu</label>
                     <div class="mb-5">
                         <label for="training-title" class="block text-gray-600 text-xs font-bold mb-1">Tytuł treningu</label>
                         <input v-model="trainingTitle" id="training-title" type="text" placeholder="Np. Trening siłowy" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required/>
@@ -133,8 +150,8 @@ const getTrainingStatus = (training) => {
                         <label for="training-date" class="block text-gray-600 text-xs font-bold mb-1">Data treningu</label>
                         <input v-model="trainingDate" id="training-date" type="date" :min="today" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required/>
                     </div>
-                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
-                         <div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-5">
+                        <div>
                             <label for="training-start-time" class="block text-gray-600 text-xs font-bold mb-1">Godzina rozpoczęcia</label>
                             <input v-model="trainingStartTime" id="training-start-time" type="time" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required/>
                         </div>
@@ -143,9 +160,13 @@ const getTrainingStatus = (training) => {
                             <input v-model="trainingEndTime" id="training-end-time" type="time" class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" required/>
                         </div>
                     </div>
-                     <div class="mb-6">
-                        <label for="training-description" class="block text-gray-600 text-xs font-bold mb-1">Opis i ćwiczenia</label>
-                        <textarea v-model="trainingDescription" id="training-description" placeholder="Wprowadź ćwiczenia, serie, powtórzenia itd." class="w-full p-3 border border-gray-300 rounded-md h-36 resize-y focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                    <div class="mb-6">
+                        <label for="training-description" class="block text-gray-600 text-xs font-bold mb-1">Opis</label>
+                        <textarea v-model="trainingDescription" id="training-description" placeholder="Wprowadź opis treningu" class="w-full p-3 border border-gray-300 rounded-md h-36 resize-y focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                    </div>
+                    <div class="mb-6">
+                        <label for="training-description" class="block text-gray-600 text-xs font-bold mb-1">Plan treningowy</label>
+                        <textarea v-model="trainingPlan" id="training-description" placeholder="Wprowadź ćwiczenia, serie, powtórzenia itd." class="w-full p-3 border border-gray-300 rounded-md h-36 resize-y focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
                     </div>
                 </div>
 
@@ -161,19 +182,23 @@ const getTrainingStatus = (training) => {
         <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Lista treningów</h2>
             <div v-if="trainings && trainings.length > 0" class="space-y-4">
-                <div v-for="training in trainings" :key="training.id" class="p-4 border rounded-lg bg-gray-50">
+                <div 
+                    v-for="training in trainings" 
+                    :key="training.id" 
+                    class="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                    @click="openDetails(training)"
+                >
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="font-bold text-lg text-gray-800">{{ training.title }}</h3>
                             <p class="text-sm text-gray-600">Data: {{ training.date }}</p>
                             <p class="text-sm text-gray-600">Godzina: {{ training.startTime }} - {{ training.endTime }}</p>
-                            <p v-if="training.description" class="mt-2 text-sm text-gray-600 whitespace-pre-wrap">{{ training.description }}</p>
-                             <p class="text-sm text-gray-600 mt-2">Status: <span class="font-medium" :class="{
+                            <p class="text-sm text-gray-600 mt-2">Status: <span class="font-medium" :class="{
                                 'text-green-600': getTrainingStatus(training) === 'Ukończony',
                                 'text-blue-600': getTrainingStatus(training) === 'Planowany',
                                 'text-red-600': getTrainingStatus(training) === 'Anulowany'
                             }">{{ getTrainingStatus(training) }}</span></p>
-                            <button v-if="getTrainingStatus(training) === 'Planowany'" @click="cancelTraining(training.id, training.uid)" class="mt-2 text-sm text-red-500 hover:text-red-700 font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
+                            <button v-if="getTrainingStatus(training) === 'Planowany'" @click.stop="cancelTraining(training.id, training.uid)" class="mt-2 text-sm text-red-500 hover:text-red-700 font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
                                 <i class="fa-solid fa-ban mr-1"></i> Anuluj
                             </button>
                         </div>
@@ -187,6 +212,61 @@ const getTrainingStatus = (training) => {
             </div>
             <div v-else>
                 <p class="text-gray-500">Brak zaplanowanych treningów.</p>
+            </div>
+        </div>
+
+        <!-- Details Modal -->
+        <div v-if="selectedTrainingForDetails" class="fixed inset-0 bg-[rgba(0,0,0,0.85)] flex items-center justify-center p-4 z-50" @click.self="closeDetails">
+            <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white">
+                    <h3 class="text-xl font-bold text-gray-800">{{ selectedTrainingForDetails.title }}</h3>
+                    <button @click="closeDetails" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    <div>
+                        <p class="text-sm text-gray-500 font-semibold">Data i czas</p>
+                        <p class="text-gray-800">{{ selectedTrainingForDetails.date }}</p>
+                        <p class="text-gray-800">{{ selectedTrainingForDetails.startTime }}-{{ selectedTrainingForDetails.endTime }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-500 font-semibold">Status</p>
+                         <span class="font-medium" :class="{
+                                'text-green-600': getTrainingStatus(selectedTrainingForDetails) === 'Ukończony',
+                                'text-blue-600': getTrainingStatus(selectedTrainingForDetails) === 'Planowany',
+                                'text-red-600': getTrainingStatus(selectedTrainingForDetails) === 'Anulowany'
+                            }">{{ getTrainingStatus(selectedTrainingForDetails) }}</span>
+                    </div>
+                    <div v-if="selectedTrainingForDetails.description">
+                        <p class="text-sm text-gray-500 font-semibold">Opis</p>
+                        <p class="text-gray-700 whitespace-pre-wrap break-words">{{ selectedTrainingForDetails.description }}</p>
+                    </div>
+                    <div v-if="selectedTrainingForDetails.plan">
+                        <p class="text-sm text-gray-500 font-semibold">Plan treningowy</p>
+                        <p class="text-gray-700 whitespace-pre-wrap break-words">{{ selectedTrainingForDetails.plan }}</p>
+                    </div>
+                     <div v-if="selectedTrainingForDetails.otherUser" class="pt-4 border-t flex items-center">
+                        <img :src="selectedTrainingForDetails.otherUser.imageURL || '/images/no_user.png'" alt="Avatar" class="w-10 h-10 rounded-full mr-3">
+                        <div>
+                             <p class="text-sm font-bold text-gray-800">{{ selectedTrainingForDetails.otherUser.name }}</p>
+                            <p class="text-xs text-gray-500">{{ user.role === 'trainer' ? 'Podopieczny' : 'Trener' }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 border-t bg-gray-50 flex justify-end">
+                    <button 
+                        class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
+                        :class="{ 'opacity-50 cursor-not-allowed hover:bg-yellow-400': getTrainingStatus(selectedTrainingForDetails) === 'Anulowany' }"
+                        :disabled="getTrainingStatus(selectedTrainingForDetails) === 'Anulowany'"
+                        @click="generateTrainingPDF(selectedTrainingForDetails.id)"
+                    >
+                        Wygeneruj PDF
+                    </button>
+                    <button @click="closeDetails" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors cursor-pointer">
+                        Zamknij
+                    </button>
+                </div>
             </div>
         </div>
     </div>

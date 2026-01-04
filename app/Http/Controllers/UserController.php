@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelPdf\Facades\Pdf;
 use App\Services\FirebaseService;
+use Spatie\Browsershot\Browsershot;
 
 class UserController extends Controller
 {
@@ -117,6 +118,39 @@ class UserController extends Controller
     public function cancelTraining(Request $request)
     {
         $this->user->cancelTraining($request->all());
+    }
+
+    public function generateTrainingPDF($id)
+    {
+        $training = $this->user->generateTrainingPDF($id);
+        $training['id'] = $id;
+
+        $parts = explode('_', $id);
+        if (count($parts) >= 3) {
+            $trainerUid = $parts[1];
+            $menteeUid = $parts[2];
+            $loggedUid = session('loggedUser.uid');
+
+            $otherUid = ($loggedUid === $trainerUid) ? $menteeUid : $trainerUid;
+            $otherUser = $this->user->getUserByUid($otherUid);
+
+            $roleLabel = ($loggedUid === $trainerUid) ? 'Podopieczny' : 'Trener';
+            $otherUser['roleLabel'] = $roleLabel;
+            
+            $training['otherUser'] = $otherUser;
+        }
+
+        $today = date('Y-m-d');
+        if (isset($training['status']) && $training['status'] === 'Planowany' && isset($training['date']) && $training['date'] < $today) {
+            $training['status'] = 'Ukończony';
+        }
+
+        return Pdf::view('training', ['training' => $training])
+            ->withBrowsershot(function (Browsershot $browsershot) {
+                $browsershot->timeout(120);
+                $browsershot->noSandbox();
+            })
+            ->download('training.pdf');
     }
 
     public function addDiet(Request $request)
