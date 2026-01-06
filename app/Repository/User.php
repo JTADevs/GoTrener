@@ -30,14 +30,16 @@ class User implements UserInterface
             $user['uid'] = $uid;
         }
 
-        $user = array_merge($user, ['currentDimensions' => $this->firebase->firestore()
+        $currentDimensions = $this->firebase->firestore()
                 ->database()
                 ->collection('users')
                 ->document($uid)
                 ->collection('scores')
                 ->document('currentDimensions')
                 ->snapshot()
-                ->data() ?? []]);
+                ->data() ?? [];
+
+        $user = array_merge($user, ['currentDimensions' => $currentDimensions]);
 
         $personalEventsSnapshot = $this->firebase->firestore()
             ->database()
@@ -55,6 +57,48 @@ class User implements UserInterface
         }
 
         $user = array_merge($user, ['personalEvents' => $personalEvents]);  
+
+        $statsHistorySnapshot = $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($uid)
+            ->collection('statsHistory')
+            ->documents();
+
+        $statsHistory = [];
+        $historyDates = [];
+
+        foreach ($statsHistorySnapshot as $document) {
+            $statsHistory[] = array_merge(
+                $document->data(),
+                ['id' => $document->id()]
+            ); // id should be YYYY-MM-DD
+            $historyDates[$document->id()] = true;
+        }
+
+        // Add currentDimensions as a history point if it exists and date is not already in history (or if history is empty)
+        // Ideally, currentDimensions IS the latest state, but if statsHistory is used, it should be in sync.
+        // However, if currentDimensions represents "Start Data" (older data), it might not have a date effectively if not set.
+        // If updated_at is present:
+        if (!empty($currentDimensions) && isset($currentDimensions['updated_at'])) {
+             // Handle Carbon or string
+             try {
+                $date = \Carbon\Carbon::parse($currentDimensions['updated_at'])->toDateString();
+                if (!isset($historyDates[$date])) {
+                     $currentDimensions['id'] = $date;
+                     $statsHistory[] = $currentDimensions;
+                }
+             } catch (\Exception $e) {
+                 // ignore date parse error
+             }
+        }
+        
+        // Sort by date (id)
+        usort($statsHistory, function($a, $b) {
+            return strcmp($a['id'], $b['id']);
+        });
+
+        $user = array_merge($user, ['statsHistory' => $statsHistory]);
 
         return $user;
     }
@@ -169,35 +213,40 @@ class User implements UserInterface
 
     public function updateStats(array $data)
     {
+        $uid = session('loggedUser.uid');
+        
         $this->firebase->firestore()
             ->database()
             ->collection('users')
-            ->document(session('loggedUser.uid'))
+            ->document($uid)
             ->set([
-                'statsUpdatePeriod' => $data['period'],
                 'statsUpdatedAt' => now()->toDateString(),
             ], ['merge' => true]);
+
+        $currentDate = now()->toDateString();
+        
+        $statsData = ['created_at' => now()];
+        $fields = [
+            'weight', 'height', 'neckCircumference', 'chestCircumference',
+            'waistCircumference', 'abdomenCircumference', 'hipCircumference',
+            'bicepsCircumference', 'wristCircumference', 'thighCircumference',
+            'calfCircumference', 'ankleCircumference'
+        ];
+
+        foreach ($fields as $field) {
+            if (isset($data[$field]) && $data[$field] !== '' && $data[$field] !== null) {
+                $statsData[$field] = $data[$field];
+            }
+        }
 
         $this->firebase->firestore()
             ->database()
             ->collection('users')
-            ->document(session('loggedUser.uid'))
+            ->document($uid)
             ->collection('statsHistory')
-            ->add([
-                'created_at' => now(),
-                'weight' => $data['weight'],
-                'height' => $data['height'],
-                'neckCircumference' => $data['neckCircumference'],
-                'chestCircumference' => $data['chestCircumference'],
-                'waistCircumference' => $data['waistCircumference'],
-                'abdomenCircumference' => $data['abdomenCircumference'],
-                'hipCircumference' => $data['hipCircumference'],
-                'bicepsCircumference' => $data['bicepsCircumference'],
-                'wristCircumference' => $data['wristCircumference'],
-                'thighCircumference' => $data['thighCircumference'],
-                'calfCircumference' => $data['calfCircumference'],
-                'ankleCircumference' => $data['ankleCircumference'],    
-            ]);
+            ->document($currentDate)
+            ->set($statsData, ['merge' => true]);
+            
         return true;    
     }
 
