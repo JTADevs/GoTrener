@@ -72,28 +72,20 @@ class User implements UserInterface
             $statsHistory[] = array_merge(
                 $document->data(),
                 ['id' => $document->id()]
-            ); // id should be YYYY-MM-DD
+            );
             $historyDates[$document->id()] = true;
         }
 
-        // Add currentDimensions as a history point if it exists and date is not already in history (or if history is empty)
-        // Ideally, currentDimensions IS the latest state, but if statsHistory is used, it should be in sync.
-        // However, if currentDimensions represents "Start Data" (older data), it might not have a date effectively if not set.
-        // If updated_at is present:
         if (!empty($currentDimensions) && isset($currentDimensions['updated_at'])) {
-             // Handle Carbon or string
              try {
                 $date = \Carbon\Carbon::parse($currentDimensions['updated_at'])->toDateString();
                 if (!isset($historyDates[$date])) {
                      $currentDimensions['id'] = $date;
                      $statsHistory[] = $currentDimensions;
                 }
-             } catch (\Exception $e) {
-                 // ignore date parse error
-             }
+             } catch (\Exception $e) {}
         }
         
-        // Sort by date (id)
         usort($statsHistory, function($a, $b) {
             return strcmp($a['id'], $b['id']);
         });
@@ -286,6 +278,11 @@ class User implements UserInterface
             'status'      => 'Planowany',
         ];
 
+        $this->firebase->firestore()->database()
+            ->collection('trainings')
+            ->document(Str::uuid() . '_' . $data['trainerUid'] . '_' . $data['uid'])
+            ->set($trainingData);
+
         $personalEvent = [
             'created_at' => now(),
             'eventTime' => $data['startTime'],
@@ -293,12 +290,7 @@ class User implements UserInterface
             'eventDateEnd' => $data['date'],
             'selectedDate' => $data['date']
         ];
-
-        $this->firebase->firestore()->database()
-            ->collection('trainings')
-            ->document(Str::uuid() . '_' . $data['trainerUid'] . '_' . $data['uid'])
-            ->set($trainingData);
-
+        
         $this->firebase->firestore()
             ->database()
             ->collection('users')
