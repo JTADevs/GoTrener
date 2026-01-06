@@ -18,7 +18,21 @@ const trainingDate = ref('');
 const trainingStartTime = ref('');
 const trainingEndTime = ref('');
 const trainingDescription = ref('');
-const trainingPlan = ref('');
+const trainingPlanItems = ref([{ exercise: '', details: '' }]);
+
+const addExercise = () => {
+    if (trainingPlanItems.value.length < 20) {
+        trainingPlanItems.value.push({ exercise: '', details: '' });
+    } else {
+        alert('Możesz dodać maksymalnie 20 ćwiczeń.');
+    }
+};
+
+const removeExercise = (index) => {
+    if (trainingPlanItems.value.length > 1) {
+        trainingPlanItems.value.splice(index, 1);
+    }
+};
 
 const selectedTrainingForDetails = ref(null);
 
@@ -62,7 +76,7 @@ const submitTraining = () => {
         startTime: trainingStartTime.value,
         endTime: trainingEndTime.value,
         description: trainingDescription.value,
-        plan: trainingPlan.value
+        plan: trainingPlanItems.value.map(item => `${item.exercise} - ${item.details}`).join('\n')
     };
 
     router.post('/addTraining', trainingData, {
@@ -74,7 +88,7 @@ const submitTraining = () => {
             trainingStartTime.value = '';
             trainingEndTime.value = '';
             trainingDescription.value = '';
-            trainingPlan.value = '';
+            trainingPlanItems.value = [{ exercise: '', details: '' }];
         }
     });
 };
@@ -165,8 +179,43 @@ const getTrainingStatus = (training) => {
                         <textarea v-model="trainingDescription" id="training-description" placeholder="Wprowadź opis treningu" class="w-full p-3 border border-gray-300 rounded-md h-36 resize-y focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
                     </div>
                     <div class="mb-6">
-                        <label for="training-description" class="block text-gray-600 text-xs font-bold mb-1">Plan treningowy</label>
-                        <textarea v-model="trainingPlan" id="training-description" placeholder="Wprowadź ćwiczenia, serie, powtórzenia itd." class="w-full p-3 border border-gray-300 rounded-md h-36 resize-y focus:outline-none focus:ring-2 focus:ring-yellow-500" required></textarea>
+                        <label class="block text-gray-600 text-xs font-bold mb-2">Plan treningowy</label>
+                        <div v-for="(item, index) in trainingPlanItems" :key="index" class="flex flex-col sm:flex-row gap-3 mb-3">
+                            <div class="flex-grow">
+                                <input 
+                                    v-model="item.exercise" 
+                                    placeholder="Nazwa ćwiczenia" 
+                                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" 
+                                    required
+                                />
+                            </div>
+                            <div class="sm:w-1/3">
+                                <input 
+                                    v-model="item.details" 
+                                    placeholder="Serie / Powtórzenia / Kg" 
+                                    class="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" 
+                                    required
+                                />
+                            </div>
+                            <button 
+                                type="button" 
+                                @click="removeExercise(index)" 
+                                class="p-3 text-red-500 hover:text-red-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors flex items-center justify-center shrink-0 cursor-pointer" 
+                                v-if="trainingPlanItems.length > 1"
+                                title="Usuń ćwiczenie"
+                            >
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                        <button 
+                            type="button" 
+                            @click="addExercise" 
+                            class="mt-2 text-sm text-yellow-600 hover:text-yellow-700 font-bold flex items-center gap-2 px-1 py-1 rounded transition-colors cursor-pointer"
+                            :class="{ 'opacity-50 cursor-not-allowed': trainingPlanItems.length >= 20 }"
+                            :disabled="trainingPlanItems.length >= 20"
+                        >
+                            <i class="fa-solid fa-plus-circle"></i> Dodaj kolejne ćwiczenie
+                        </button>
                     </div>
                 </div>
 

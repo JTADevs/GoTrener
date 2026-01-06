@@ -10,7 +10,7 @@ import { router } from '@inertiajs/vue3';
 
     const searchQuery = ref('');
     const selectedMentee = ref(null);
-    const expandedDietId = ref(null);
+    const selectedDietForDetails = ref(null);
 
     // Diet form fields
     const dietDescription = ref('');
@@ -69,12 +69,12 @@ import { router } from '@inertiajs/vue3';
         selectedMentee.value = mentee;
     };
 
-    const toggleDiet = (dietId) => {
-        if (expandedDietId.value === dietId) {
-            expandedDietId.value = null;
-        } else {
-            expandedDietId.value = dietId;
-        }
+    const openDetails = (diet) => {
+        selectedDietForDetails.value = diet;
+    };
+
+    const closeDetails = () => {
+        selectedDietForDetails.value = null;
     };
 
     const getDayName = (day) => {
@@ -545,8 +545,8 @@ import { router } from '@inertiajs/vue3';
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Twoje Diety</h2>
             <div v-if="diets && diets.length > 0" class="space-y-4">
                 <div v-for="diet in diets" :key="diet.id">
-                    <div class="p-4 border bg-gray-50 rounded-t-lg" @click="toggleDiet(diet.id)">
-                        <div class="flex justify-between items-center cursor-pointer">
+                    <div class="p-4 border bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors" @click="openDetails(diet)">
+                        <div class="flex justify-between items-center">
                             <div>
                                 <h3 class="font-bold text-lg text-gray-800">{{ diet.dietDescription }}</h3>
                                 <p class="text-sm text-gray-600">Utworzono: {{ diet.created_at.split('T')[0] }}</p>
@@ -556,65 +556,93 @@ import { router } from '@inertiajs/vue3';
                             </div>
                             <div class="flex items-center">
                                 <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 hover:text-red-700 mr-4" @click.stop="deleteDiet(diet.id)">Usuń</button>
-                                <div class="text-gray-500">
-                                    <svg class="w-6 h-6 transform transition-transform" :class="{'rotate-180': expandedDietId === diet.id}" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-                                </div>
                             </div>
-                        </div>
-                    </div>
-                    <div v-if="expandedDietId === diet.id" class="p-4 border border-t-0 rounded-b-lg bg-white">
-                        <div class="space-y-4">
-                            <div v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
-                                <table class="min-w-full text-sm">
-                                    <thead class="bg-yellow-400 text-black">
-                                        <tr>
-                                            <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
-                                                {{ getDayName(day) }}
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-200" v-if="diet[day]">
-                                        <tr class="bg-white">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700 w-1/5">Śniadanie</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].breakfast }}</td>
-                                        </tr>
-                                        <tr class="bg-gray-50">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700">Drugie śniadanie</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].secondBreakfast }}</td>
-                                        </tr>
-                                        <tr class="bg-white">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700">Obiad</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].lunch }}</td>
-                                        </tr>
-                                        <tr class="bg-gray-50">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700">Podwieczorek</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].afternoonSnack }}</td>
-                                        </tr>
-                                        <tr class="bg-white">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700">Kolacja</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].dinner }}</td>
-                                        </tr>
-                                        <tr class="bg-gray-50">
-                                            <th class="px-4 py-3 text-left font-semibold text-gray-700">Makro</th>
-                                            <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ diet[day].macro }}</td>
-                                        </tr>
-                                    </tbody>
-                                    <tbody v-else>
-                                        <tr>
-                                            <td colspan="2" class="p-4 text-center text-gray-500">Brak danych dla tego dnia.</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="mt-4 flex justify-center">
-                            <button class="bg-yellow-500 text-gray-700 font-semibold p-2 rounded hover:bg-yellow-400 cursor-pointer" @click="downloadPDF(diet.id)">Pobierz PDF</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div v-else>
                 <p class="text-gray-500">Brak przypisanych diet.</p>
+            </div>
+        </div>
+
+        <!-- Details Modal -->
+        <div v-if="selectedDietForDetails" class="fixed inset-0 bg-[rgba(0,0,0,0.85)] flex items-center justify-center p-4 z-50" @click.self="closeDetails">
+            <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div class="p-6 border-b flex justify-between items-center sticky top-0 bg-white z-10">
+                    <div>
+                         <h3 class="text-xl font-bold text-gray-800">{{ selectedDietForDetails.dietDescription }}</h3>
+                         <p class="text-sm text-gray-600 mt-1" v-if="selectedDietForDetails.caloricValue">Kaloryczność: {{ selectedDietForDetails.caloricValue }}</p>
+                    </div>
+                    <button @click="closeDetails" class="text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-6">
+                     <!-- User Info -->
+                     <div class="flex flex-col sm:flex-row gap-4 text-sm text-gray-600 border-b pb-4">
+                        <p v-if="props.user.role !== 'trainer'"><span class="font-semibold">Trener:</span> {{ selectedDietForDetails.trainerName }}</p>
+                        <p v-if="props.user.role !== 'client'"><span class="font-semibold">Podopieczny:</span> {{ selectedDietForDetails.menteeName }}</p>
+                        <p><span class="font-semibold">Utworzono:</span> {{ selectedDietForDetails.created_at.split('T')[0] }}</p>
+                     </div>
+
+                    <!-- Days Tables -->
+                    <div class="space-y-6">
+                         <div v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                            <table class="min-w-full text-sm">
+                                <thead class="bg-yellow-400 text-black">
+                                    <tr>
+                                        <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
+                                            {{ getDayName(day) }}
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-200" v-if="selectedDietForDetails[day]">
+                                    <tr class="bg-white">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700 w-1/5">Śniadanie</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].breakfast }}</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Drugie śniadanie</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].secondBreakfast }}</td>
+                                    </tr>
+                                    <tr class="bg-white">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Obiad</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].lunch }}</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Podwieczorek</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].afternoonSnack }}</td>
+                                    </tr>
+                                    <tr class="bg-white">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Kolacja</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].dinner }}</td>
+                                    </tr>
+                                    <tr class="bg-gray-50">
+                                        <th class="px-4 py-3 text-left font-semibold text-gray-700">Makro</th>
+                                        <td class="p-2 text-gray-700 whitespace-pre-wrap">{{ selectedDietForDetails[day].macro }}</td>
+                                    </tr>
+                                </tbody>
+                                <tbody v-else>
+                                    <tr>
+                                        <td colspan="2" class="p-4 text-center text-gray-500">Brak danych dla tego dnia.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-6 border-t bg-gray-50 flex justify-end sticky bottom-0 z-10">
+                    <button 
+                        class="bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
+                        @click="downloadPDF(selectedDietForDetails.id)"
+                    >
+                        Pobierz PDF
+                    </button>
+                    <button @click="closeDetails" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors cursor-pointer">
+                        Zamknij
+                    </button>
+                </div>
             </div>
         </div>
     </div>
