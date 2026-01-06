@@ -7,6 +7,7 @@
     import { ref } from 'vue';
     import Trainings from '../Components/Trainings.vue';
     import Diet from '../Components/Diet.vue';
+import TrainingPlans from '../Components/TrainingPlans.vue';
 
     const props = defineProps({
         user: Object,
@@ -37,7 +38,7 @@
                     <!-- Sidebar Content -->
                     <nav :class="sidebarOpen ? 'block' : 'hidden'" class="lg:block py-4">
                         <button @click="activeView = 'profil'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'profil' ? 'active-link' : 'hover:bg-gray-700'">
-                            <i class="fa-solid fa-user-gear w-6 text-center"></i>
+                            <i class="fa-solid fa-user w-6 text-center"></i>
                             <span class="mx-4 font-medium">Profil</span>
                         </button>
                         <button @click="activeView = 'calendar'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'calendar' ? 'active-link' : 'hover:bg-gray-700'">
@@ -51,6 +52,10 @@
                         <button @click="activeView = 'dieta'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'dieta' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-utensils w-6 text-center"></i>
                             <span class="mx-4 font-medium">Moje diety</span>
+                        </button>
+                        <button @click="activeView = 'plan'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'plan' ? 'active-link' : 'hover:bg-gray-700'">
+                            <i class="fa-solid fa-clipboard-list w-6 text-center"></i>
+                            <span class="mx-4 font-medium">Moje plany</span>
                         </button>
                         <button @click="activeView = 'komunikator'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-comments w-6 text-center"></i>
@@ -70,6 +75,7 @@
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
                         <Trainings v-if="activeView === 'treningi'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
                         <Diet v-if="activeView === 'dieta'" class="p-6" :user="user" :mentees="mentees" :diets="diets"/>
+                        <TrainingPlans v-if="activeView === 'plan'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>

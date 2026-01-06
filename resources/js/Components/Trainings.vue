@@ -19,6 +19,8 @@ const trainingStartTime = ref('');
 const trainingEndTime = ref('');
 const trainingDescription = ref('');
 const trainingPlanItems = ref([{ exercise: '', details: '' }]);
+const menteeName = ref('');
+const trainerName = ref('');
 
 const addExercise = () => {
     if (trainingPlanItems.value.length < 20) {
@@ -55,9 +57,11 @@ const filteredMentees = computed(() => {
 
 const selectMentee = (mentee) => {
     selectedMentee.value = mentee;
+    menteeName.value = mentee.name;
 };
 
 const submitTraining = () => {
+    trainerName.value = props.user.name;
     if (!selectedMentee.value) {
         alert('Proszę wybrać podopiecznego.');
         return;
@@ -76,6 +80,8 @@ const submitTraining = () => {
         startTime: trainingStartTime.value,
         endTime: trainingEndTime.value,
         description: trainingDescription.value,
+        menteeName: menteeName.value,
+        trainerName: trainerName.value,
         plan: trainingPlanItems.value.map(item => `${item.exercise} - ${item.details}`).join('\n')
     };
 
@@ -150,6 +156,8 @@ const getTrainingStatus = (training) => {
 
                     <div v-if="selectedMentee" class="mt-4 p-3 bg-green-100 border border-green-200 rounded-md">
                         <p class="font-semibold text-green-800">Wybrany podopieczny: <span class="font-bold">{{ selectedMentee.name }}</span></p>
+                        <input type="hidden" name="menteeName" v-model="menteeName">
+                        <input type="hidden" name="trainerName" v-model="trainerName">   
                     </div>
                 </div>
 

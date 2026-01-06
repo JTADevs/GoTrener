@@ -237,10 +237,32 @@ class User implements UserInterface
             'status'      => 'Planowany',
         ];
 
+        $personalEvent = [
+            'created_at' => now(),
+            'eventTime' => $data['startTime'],
+            'eventDateStart' => $data['date'],
+            'eventDateEnd' => $data['date'],
+            'selectedDate' => $data['date']
+        ];
+
         $this->firebase->firestore()->database()
             ->collection('trainings')
             ->document(Str::uuid() . '_' . $data['trainerUid'] . '_' . $data['uid'])
             ->set($trainingData);
+
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($data['uid'])
+            ->collection('personalEvents')
+            ->add($personalEvent + ['eventDescription' => 'Trening z ' . $data['trainerName']]);
+
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document($data['trainerUid'])
+            ->collection('personalEvents')
+            ->add($personalEvent + ['eventDescription' => 'Trening z ' . $data['menteeName']]);
 
         return true;
     }

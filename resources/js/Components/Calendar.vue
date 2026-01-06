@@ -37,11 +37,11 @@ const weeks = computed(() => {
         days.push(null);
     }
 
-    for (let i = 1; i <= daysInMonth; i++) {
-        days.push({
-            date: new Date(year, month, i)
-        });
-    }
+     for (let i = 1; i <= daysInMonth; i++) {
+         days.push({
+             date: new Date(year, month, i, 12, 0, 0, 0)
+         });
+     }
 
     while (days.length % 7 !== 0) {
         days.push(null);
@@ -95,12 +95,20 @@ const nextMonth = () => {
 
 const popupOpen = ref(false);
 const selectedDate = ref(null);
+const selectedDateDisplay = ref(null);
 
 const openPopup = (day) => {
     if (!day) return;
     if (isPast(day.date) && !isToday(day.date)) return;
-    selectedDate.value = day.date.toISOString().split('T')[0];
+    
+    const year = day.date.getFullYear();
+    const month = String(day.date.getMonth() + 1).padStart(2, '0');
+    const da = String(day.date.getDate()).padStart(2, '0');
+    selectedDate.value = `${year}-${month}-${da}`;
     form.selectedDate = selectedDate.value;
+
+    selectedDateDisplay.value = `${da}.${month}.${year}`;
+    
     popupOpen.value = true;
 };
 
@@ -252,7 +260,7 @@ const filteredEvents = computed(() => {
                 }})" class="mt-4">
                 <div class="py-4">
                     <p class="text-base text-gray-700">
-                        Wybrana data: <span class="font-semibold">{{ selectedDate }}</span>
+                        Wybrana data: <span class="font-semibold">{{ selectedDateDisplay }}</span>
                     </p>
                     <p class="text-sm text-gray-600 mt-2">
                         Wybierz godzinę, o której chcesz odbyć trening.
