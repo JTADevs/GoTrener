@@ -15,6 +15,7 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
         mentees: Array,
         trainings: Array,
         diets: Array,
+        trainingPlans: Array,
     });
 
     const sidebarOpen = ref(false);
@@ -75,7 +76,7 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
                         <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
                         <Trainings v-if="activeView === 'treningi'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
                         <Diet v-if="activeView === 'dieta'" class="p-6" :user="user" :mentees="mentees" :diets="diets"/>
-                        <TrainingPlans v-if="activeView === 'plan'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
+                        <TrainingPlans v-if="activeView === 'plan'" class="p-6" :user="user" :mentees="mentees" :trainingPlans="trainingPlans"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
                     </div>

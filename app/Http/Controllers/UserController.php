@@ -42,6 +42,7 @@ class UserController extends Controller
             'mentees' => $mentees ?? [],
             'trainings' => $this->user->getTrainings(session('loggedUser.uid')),
             'diets' => $this->user->getDiets(session('loggedUser.uid')),
+            'trainingPlans' => $this->user->getTrainingPlans(session('loggedUser.uid')),
             'view' => $request->query('view'),
         ]);
     }
@@ -167,5 +168,22 @@ class UserController extends Controller
     {
         $data = $this->user->downloadDietPDF($id);
         return Pdf::view('diet', ['diet' => $data])->download('diet.pdf');
+    }
+
+    public function addTrainingPlan(Request $request)
+    {
+        $this->user->addTrainingPlan($request->all());
+    }
+
+    public function deleteTrainingPlan(string $id)
+    {
+        $this->user->deleteTrainingPlan($id);
+        return redirect()->back();
+    }
+
+    public function downloadTrainingPlanPDF(string $id)
+    {
+        $data = $this->user->downloadTrainingPlanPDF($id);
+        return Pdf::view('training_plan', ['plan' => $data])->download('training_plan.pdf');
     }
 }

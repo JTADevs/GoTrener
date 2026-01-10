@@ -46,6 +46,7 @@ class User implements UserInterface
             ->collection('users')
             ->document($uid)
             ->collection('personalEvents')
+            ->orderBy('selectedDate', 'ASC')
             ->documents();
 
         $personalEvents = [];
@@ -193,13 +194,24 @@ class User implements UserInterface
 
     public function deleteEvent(string $id)
     {
-        $this->firebase->firestore()
+        $deletedEventRef = $this->firebase->firestore()
             ->database()
             ->collection('users')
             ->document(session('loggedUser.uid'))
             ->collection('personalEvents')
-            ->document($id)
-            ->delete();
+            ->document($id);
+        
+        $deletedEvent = $deletedEventRef->snapshot()->data();
+
+        if(!empty($deletedEvent['trainerUid']) && !empty($deletedEvent['menteeUid'])){
+            $this->firebase->firestore()->database()
+                ->collection('trainings')
+                ->document($deletedEvent['trainingId'])
+                ->set(['status' => 'Anulowany'], ['merge' => true]);
+        }
+
+        $deletedEventRef->delete();
+
         return true;    
     }
 
@@ -278,9 +290,11 @@ class User implements UserInterface
             'status'      => 'Planowany',
         ];
 
-        $this->firebase->firestore()->database()
+        $trainingId = Str::uuid() . '_' . $data['trainerUid'] . '_' . $data['uid'];
+
+        $training = $this->firebase->firestore()->database()
             ->collection('trainings')
-            ->document(Str::uuid() . '_' . $data['trainerUid'] . '_' . $data['uid'])
+            ->document($trainingId)
             ->set($trainingData);
 
         $personalEvent = [
@@ -296,14 +310,24 @@ class User implements UserInterface
             ->collection('users')
             ->document($data['uid'])
             ->collection('personalEvents')
-            ->add($personalEvent + ['eventDescription' => 'Trening z ' . $data['trainerName']]);
+            ->add($personalEvent + [
+                'eventDescription' => 'Trening z ' . $data['trainerName'],
+                'trainerUid' => $data['trainerUid'],
+                'menteeUid' => $data['uid'],
+                'trainingId' => $trainingId,
+            ]);
 
         $this->firebase->firestore()
             ->database()
             ->collection('users')
             ->document($data['trainerUid'])
             ->collection('personalEvents')
-            ->add($personalEvent + ['eventDescription' => 'Trening z ' . $data['menteeName']]);
+            ->add($personalEvent + [
+                'eventDescription' => 'Trening z ' . $data['menteeName'],
+                'trainerUid' => $data['trainerUid'],
+                'menteeUid' => $data['uid'],
+                'trainingId' => $trainingId,
+            ]);
 
         return true;
     }
@@ -345,10 +369,46 @@ class User implements UserInterface
 
     public function cancelTraining(array $data)
     {
-        $this->firebase->firestore()->database()
+        $trainingId = $data['id'];
+        $trainingRef = $this->firebase->firestore()->database()
             ->collection('trainings')
-            ->document($data['id'])
-            ->set(['status' => 'Anulowany'], ['merge' => true]);
+            ->document($trainingId);
+
+        $trainingSnapshot = $trainingRef->snapshot();
+
+        if (!$trainingSnapshot->exists()) {
+             return false;
+        }
+
+        $trainingData = $trainingSnapshot->data();
+
+        if (!empty($trainingData['menteeUid'])) {
+            $menteeEvents = $this->firebase->firestore()->database()
+                ->collection('users')
+                ->document($trainingData['menteeUid'])
+                ->collection('personalEvents')
+                ->where('trainingId', '=', $trainingId)
+                ->documents();
+
+            foreach ($menteeEvents as $document) {
+                $document->reference()->delete();
+            }
+        }
+
+        if (!empty($trainingData['trainerUid'])) {
+            $trainerEvents = $this->firebase->firestore()->database()
+                ->collection('users')
+                ->document($trainingData['trainerUid'])
+                ->collection('personalEvents')
+                ->where('trainingId', '=', $trainingId)
+                ->documents();
+
+            foreach ($trainerEvents as $document) {
+                $document->reference()->delete();
+            }
+        }
+
+        $trainingRef->set(['status' => 'Anulowany'], ['merge' => true]);
 
         return true;
     }
@@ -448,5 +508,73 @@ class User implements UserInterface
         $dietData = $dietDoc->data();
 
         return $dietData;
+    }
+
+    public function addTrainingPlan(array $data)
+    {
+        $trainerUid = $data['trainerUid'];
+        $menteeUid = $data['menteeUid'];
+
+        $planData = [
+            'trainerUid' => $trainerUid,
+            'menteeUid' => $menteeUid,
+            'trainerName' => $data['trainerName'],
+            'menteeName' => $data['menteeName'],
+            'title' => $data['title'],
+            'description' => $data['description'],
+            'plan' => $data['plan'],
+            'created_at' => now(),
+        ];
+
+        $this->firebase->firestore()->database()
+            ->collection('trainingPlans')
+            ->document(Str::uuid() . '_' . $trainerUid . '_' . $menteeUid)
+            ->set($planData);
+
+        return true;
+    }
+
+    public function deleteTrainingPlan(string $id)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('trainingPlans')
+            ->document($id)
+            ->delete();
+        return true;
+    }
+
+    public function getTrainingPlans(string $uid)
+    {
+        $trainingPlansSnapshot = $this->firebase->firestore()
+            ->database()
+            ->collection('trainingPlans')
+            ->documents();
+
+        $trainingPlans = [];
+        foreach ($trainingPlansSnapshot as $document) {
+            if (str_contains($document->id(), $uid)) {
+                $trainingPlan = $document->data();
+                $trainingPlan['id'] = $document->id();
+                $trainingPlans[] = $trainingPlan;
+            }
+        }
+
+        return $trainingPlans;
+    }
+
+    public function downloadTrainingPlanPDF(string $id)
+    {
+        $planDoc = $this->firebase->firestore()
+            ->database()
+            ->collection('trainingPlans')
+            ->document($id)
+            ->snapshot();
+
+        if (!$planDoc->exists()) {
+            return null;
+        }
+
+        return $planDoc->data();
     }
 }

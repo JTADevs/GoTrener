@@ -41,6 +41,9 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::post('/addDiet', [UserController::class, 'addDiet']);
     Route::delete('/deleteDiet/{id}', [UserController::class, 'deleteDiet']);
     Route::get('/diet-downloadPDF/{id}', [UserController::class, 'downloadDietPDF']);
+    Route::post('/addTrainingPlan', [UserController::class, 'addTrainingPlan']);
+    Route::delete('/deleteTrainingPlan/{id}', [UserController::class, 'deleteTrainingPlan']);
+    Route::get('/training-plan-downloadPDF/{id}', [UserController::class, 'downloadTrainingPlanPDF']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
 });

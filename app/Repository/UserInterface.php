@@ -21,4 +21,8 @@ interface UserInterface
     public function getDiets(string $uid);
     public function deleteDiet(string $id);
     public function downloadDietPDF(string $id);
+    public function addTrainingPlan(array $data);
+    public function getTrainingPlans(string $uid);
+    public function deleteTrainingPlan(string $id);
+    public function downloadTrainingPlanPDF(string $id);
 }
