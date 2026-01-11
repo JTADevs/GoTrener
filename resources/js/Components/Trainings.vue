@@ -255,7 +255,7 @@ const getTrainingStatus = (training) => {
                                 'text-blue-600': getTrainingStatus(training) === 'Planowany',
                                 'text-red-600': getTrainingStatus(training) === 'Anulowany'
                             }">{{ getTrainingStatus(training) }}</span></p>
-                            <button v-if="getTrainingStatus(training) === 'Planowany'" @click.stop="cancelTraining(training.id, training.uid)" class="mt-2 text-sm text-red-500 hover:text-red-700 font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
+                            <button v-if="getTrainingStatus(training) === 'Planowany'" @click.stop="cancelTraining(training.id, training.uid)" class="mt-2 text-sm text-red-500 hover:text-[#F5F570] font-bold focus:outline-none transition-colors duration-200 cursor-pointer">
                                 <i class="fa-solid fa-ban mr-1"></i> Anuluj
                             </button>
                         </div>

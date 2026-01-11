@@ -289,7 +289,7 @@
                                 <p class="text-sm text-white" v-if="props.user.role !== 'client'">Podopieczny: {{ plan.menteeName }}</p>
                             </div>
                             <div class="flex items-center">
-                                <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 hover:text-red-700 mr-4" @click.stop="deletePlan(plan.id)">Usuń</button>
+                                <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 hover:text-[#F5F570] mr-4" @click.stop="deletePlan(plan.id)">Usuń</button>
                             </div>
                         </div>
                     </div>
