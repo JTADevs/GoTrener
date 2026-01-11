@@ -173,7 +173,7 @@
                                 :key="mentee.uid"
                                 @click="selectMentee(mentee)"
                                 class="p-3 hover:bg-gray-200 cursor-pointer flex items-center transition-colors duration-150"
-                                :class="{ 'bg-yellow-200 hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
+                                :class="{ 'bg-[#F5F570] hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
                             >
                                 <img :src="mentee.imageUrl" alt="Avatar" class="w-10 h-10 rounded-full mr-4">
                                 <span class="text-gray-800 font-medium">{{ mentee.name }}</span>
