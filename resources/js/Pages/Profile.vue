@@ -24,10 +24,10 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
 
 <template>
     <Layout>
-        <div class="bg-gray-100 min-h-[calc(100vh-80px)]">
-            <div class="lg:flex">
+        <div class="bg-gray-100 flex-1 flex flex-col">
+            <div class="flex flex-col lg:flex-row flex-1">
                 <!-- Sidebar -->
-                <aside class="bg-[#241F20] text-white lg:w-64 lg:min-h-[calc(100vh-80px)]">
+                <aside class="bg-[#241F20] text-white lg:w-64">
                     <!-- Mobile Header for Sidebar -->
                     <div class="flex justify-between items-center p-4 lg:hidden">
                         <h2 class="font-bold text-lg text-[#F5F570]">Menu Profilu</h2>
@@ -70,15 +70,15 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
                 </aside>
 
                 <!-- Main Content -->
-                <main class="flex-1 p-4 sm:p-6 lg:p-8">
-                    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-xl overflow-hidden p-2">
+                <main class="flex-1 md:p-4 lg:p-8">
+                    <div class="w-full max-w-[1000px] mx-auto">
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
-                        <Calendar v-if="activeView === 'calendar'" class="p-6" :user="user"/>
-                        <Trainings v-if="activeView === 'treningi'" class="p-6" :user="user" :mentees="mentees" :trainings="trainings"/>
-                        <Diet v-if="activeView === 'dieta'" class="p-6" :user="user" :mentees="mentees" :diets="diets"/>
-                        <TrainingPlans v-if="activeView === 'plan'" class="p-6" :user="user" :mentees="mentees" :trainingPlans="trainingPlans"/>
+                        <Calendar v-if="activeView === 'calendar'" :user="user"/>
+                        <Trainings v-if="activeView === 'treningi'" :user="user" :mentees="mentees" :trainings="trainings"/>
+                        <Diet v-if="activeView === 'dieta'" :user="user" :mentees="mentees" :diets="diets"/>
+                        <TrainingPlans v-if="activeView === 'plan'" :user="user" :mentees="mentees" :trainingPlans="trainingPlans"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
-                        <Stats v-if="activeView === 'statystyki'" class="p-6" :user="user"/>
+                        <Stats v-if="activeView === 'statystyki'" :user="user"/>
                     </div>
                 </main>
             </div>

@@ -156,7 +156,7 @@ const filteredEvents = computed(() => {
 </script>
 
 <template>
-    <div class="bg-white shadow-sm sm:rounded-lg p-4 md:p-6 border border-gray-200 overflow-x-auto">
+    <div class="bg-white shadow-sm p-4 md:p-6 border border-gray-200 overflow-x-auto">
         <div class="flex items-center justify-between mb-4">
             <button @click="previousMonth" :disabled="!canGoToPreviousMonth" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors">
                 &lt;
@@ -207,7 +207,7 @@ const filteredEvents = computed(() => {
         </table>
     </div>
 
-    <div class="mt-8 p-6 bg-gray-50 rounded-xl shadow-inner">
+    <div class="mt-8 p-6 bg-gray-50 shadow-inner">
         <h2 class="text-2xl font-bold text-gray-800 mb-6 pb-2 border-b-2 border-gray-200">Twoje zbliżające się wydarzenia w: <span class="capitalize">{{ monthName }} {{ year }}</span></h2>
         <div v-if="filteredEvents.length > 0" class="space-y-4">
             <div v-for="event in filteredEvents" :key="event.id" class="p-5 border border-gray-200 rounded-lg bg-white shadow-md hover:shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-1">

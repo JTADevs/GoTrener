@@ -228,8 +228,8 @@ import { router } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto" v-if="props.user.role === 'trainer'">
+    <div>
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full" v-if="props.user.role === 'trainer'">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Dodaj nową dietę</h2>
             <form @submit.prevent="submitDiet">
                 <div class="mb-6">
@@ -247,7 +247,7 @@ import { router } from '@inertiajs/vue3';
                                 :key="mentee.uid"
                                 @click="selectMentee(mentee)"
                                 class="p-3 hover:bg-gray-200 cursor-pointer flex items-center transition-colors duration-150"
-                                :class="{ 'bg-yellow-200 hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
+                                :class="{ 'bg-[#F5F570] hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
                             >
                                 <img :src="mentee.imageUrl" alt="Avatar" class="w-10 h-10 rounded-full mr-4">
                                 <span class="text-gray-800 font-medium">{{ mentee.name }}</span>
@@ -275,7 +275,7 @@ import { router } from '@inertiajs/vue3';
                 <div class="mb-4 border-t pt-6 space-y-8">
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Poniedziałek
@@ -312,7 +312,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Wtorek
@@ -349,7 +349,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Środa
@@ -386,7 +386,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Czwartek
@@ -423,7 +423,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Piątek
@@ -460,7 +460,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Sobota
@@ -497,7 +497,7 @@ import { router } from '@inertiajs/vue3';
                     </div>
                     <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                         <table class="min-w-full text-sm">
-                            <thead class="bg-yellow-500 text-white">
+                            <thead class="bg-[#F5F570] text-[#241F20]">
                                 <tr>
                                     <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                         Niedziela
@@ -534,28 +534,28 @@ import { router } from '@inertiajs/vue3';
                     </div>
                 </div>
                 <div class="flex justify-end border-t pt-6">
-                    <button type="submit" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
+                    <button type="submit" class="w-full sm:w-auto bg-[#F5F570] hover:bg-yellow-300 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
                         Dodaj dietę
                     </button>
                 </div>
             </form>
         </div>
         
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full mt-8">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Twoje Diety</h2>
             <div v-if="diets && diets.length > 0" class="space-y-4">
                 <div v-for="diet in diets" :key="diet.id">
-                    <div class="p-4 border bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors" @click="openDetails(diet)">
+                    <div class="p-4 border bg-[#241F20] rounded-lg cursor-pointer" @click="openDetails(diet)">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="font-bold text-lg text-gray-800">{{ diet.dietDescription }}</h3>
-                                <p class="text-sm text-gray-600">Utworzono: {{ diet.created_at.split('T')[0] }}</p>
-                                <p class="text-sm text-gray-600" v-if="diet.caloricValue">Kaloryczność: {{ diet.caloricValue }}</p>
-                                <p class="text-sm text-gray-600" v-if="props.user.role !== 'trainer'">Trener: {{ diet.trainerName }}</p>
-                                <p class="text-sm text-gray-600" v-if="props.user.role !== 'client'">Podopieczny: {{ diet.menteeName }}</p>
+                                <h3 class="font-bold text-lg text-white">{{ diet.dietDescription }}</h3>
+                                <p class="text-sm text-white">Utworzono: {{ diet.created_at.split('T')[0] }}</p>
+                                <p class="text-sm text-white" v-if="diet.caloricValue">Kaloryczność: {{ diet.caloricValue }}</p>
+                                <p class="text-sm text-white" v-if="props.user.role !== 'trainer'">Trener: {{ diet.trainerName }}</p>
+                                <p class="text-sm text-white" v-if="props.user.role !== 'client'">Podopieczny: {{ diet.menteeName }}</p>
                             </div>
                             <div class="flex items-center">
-                                <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 hover:text-red-700 mr-4" @click.stop="deleteDiet(diet.id)">Usuń</button>
+                                <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 mr-4 cursor-pointer hover:text-[#F5F570]" @click.stop="deleteDiet(diet.id)">Usuń</button>
                             </div>
                         </div>
                     </div>
@@ -590,7 +590,7 @@ import { router } from '@inertiajs/vue3';
                     <div class="space-y-6">
                          <div v-for="day in ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday']" :key="day" class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
                             <table class="min-w-full text-sm">
-                                <thead class="bg-yellow-400 text-black">
+                                <thead class="bg-[#F5F570] text-black">
                                     <tr>
                                         <th colspan="2" class="px-4 py-3 text-lg font-bold tracking-wider">
                                             {{ getDayName(day) }}
@@ -634,7 +634,7 @@ import { router } from '@inertiajs/vue3';
                 </div>
                 <div class="p-6 border-t bg-gray-50 flex justify-end sticky bottom-0 z-10">
                     <button 
-                        class="bg-yellow-500 hover:bg-yellow-600 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
+                        class="bg-[#F5F570] hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
                         @click="downloadPDF(selectedDietForDetails.id)"
                     >
                         Pobierz PDF

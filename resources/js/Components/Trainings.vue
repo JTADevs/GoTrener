@@ -125,8 +125,8 @@ const getTrainingStatus = (training) => {
 </script>
 
 <template>
-    <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto" v-if="props.user.role === 'trainer'">
+    <div>
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full" v-if="props.user.role === 'trainer'">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Dodaj nowy trening</h2>
             <form @submit.prevent="submitTraining">
                 <!-- Mentee Selection -->
@@ -145,7 +145,7 @@ const getTrainingStatus = (training) => {
                                 :key="mentee.uid"
                                 @click="selectMentee(mentee)"
                                 class="p-3 hover:bg-gray-200 cursor-pointer flex items-center transition-colors duration-150"
-                                :class="{ 'bg-yellow-200 hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
+                                :class="{ 'bg-[#F5F570] hover:bg-yellow-300': selectedMentee && selectedMentee.uid === mentee.uid }"
                             >
                                 <img :src="mentee.imageUrl" alt="Avatar" class="w-10 h-10 rounded-full mr-4">
                                 <span class="text-gray-800 font-medium">{{ mentee.name }}</span>
@@ -229,28 +229,28 @@ const getTrainingStatus = (training) => {
 
                 <!-- Submit Button -->
                 <div class="flex justify-end border-t pt-6">
-                    <button type="submit" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
+                    <button type="submit" class="w-full sm:w-auto bg-[#F5F570] hover:bg-yellow-300 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
                         Dodaj trening
                     </button>
                 </div>
             </form>
         </div>
 
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full mt-8">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Lista treningów</h2>
             <div v-if="trainings && trainings.length > 0" class="space-y-4">
                 <div 
                     v-for="training in trainings" 
                     :key="training.id" 
-                    class="p-4 border rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer transition-colors duration-200"
+                    class="p-4 border rounded-lg bg-[#241F20] cursor-pointer transition-colors duration-200"
                     @click="openDetails(training)"
                 >
                     <div class="flex justify-between items-start">
                         <div>
-                            <h3 class="font-bold text-lg text-gray-800">{{ training.title }}</h3>
-                            <p class="text-sm text-gray-600">Data: {{ training.date }}</p>
-                            <p class="text-sm text-gray-600">Godzina: {{ training.startTime }} - {{ training.endTime }}</p>
-                            <p class="text-sm text-gray-600 mt-2">Status: <span class="font-medium" :class="{
+                            <h3 class="font-bold text-lg text-[#F5F570]">{{ training.title }}</h3>
+                            <p class="text-sm text-white">Data: {{ training.date }}</p>
+                            <p class="text-sm text-white">Godzina: {{ training.startTime }} - {{ training.endTime }}</p>
+                            <p class="text-sm text-white mt-2">Status: <span class="font-medium" :class="{
                                 'text-green-600': getTrainingStatus(training) === 'Ukończony',
                                 'text-blue-600': getTrainingStatus(training) === 'Planowany',
                                 'text-red-600': getTrainingStatus(training) === 'Anulowany'
@@ -261,8 +261,8 @@ const getTrainingStatus = (training) => {
                         </div>
                         <div v-if="training.otherUser" class="text-right">
                             <img :src="training.otherUser.imageURL || '/images/no_user.png'" alt="Avatar" class="w-12 h-12 rounded-full ml-auto mb-2">
-                            <span class="text-sm font-medium text-gray-700">{{ training.otherUser.name }}</span>
-                            <p class="text-xs text-gray-500">{{ user.role === 'trainer' ? 'Podopieczny' : 'Trener' }}</p>
+                            <span class="text-sm font-medium text-white">{{ training.otherUser.name }}</span>
+                            <p class="text-xs text-white">{{ user.role === 'trainer' ? 'Podopieczny' : 'Trener' }}</p>
                         </div>
                     </div>
                 </div>
@@ -313,7 +313,7 @@ const getTrainingStatus = (training) => {
                 </div>
                 <div class="p-6 border-t bg-gray-50 flex justify-end">
                     <button 
-                        class="bg-yellow-400 hover:bg-yellow-500 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
+                        class="bg-[#F5F570] hover:bg-yellow-300 text-gray-800 font-semibold py-2 px-4 rounded transition-colors mr-2 cursor-pointer"
                         :class="{ 'opacity-50 cursor-not-allowed hover:bg-yellow-400': getTrainingStatus(selectedTrainingForDetails) === 'Anulowany' }"
                         :disabled="getTrainingStatus(selectedTrainingForDetails) === 'Anulowany'"
                         @click="generateTrainingPDF(selectedTrainingForDetails.id)"

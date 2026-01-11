@@ -154,8 +154,8 @@
 </script>   
 
 <template>
-    <div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto" v-if="props.user.role === 'trainer'">
+    <div>
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full" v-if="props.user.role === 'trainer'">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Dodaj nowy plan treningowy</h2>
             <form @submit.prevent="submitPlan">
                 <div class="mb-6">
@@ -269,24 +269,24 @@
                 </div>
 
                 <div class="flex justify-end border-t pt-6">
-                    <button type="submit" class="w-full sm:w-auto bg-yellow-500 hover:bg-yellow-600 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
+                    <button type="submit" class="w-full sm:w-auto bg-[#F5F570] hover:bg-yellow-300 text-[#241F20] font-bold py-3 px-8 rounded-lg transition-all duration-200 transform flex items-center justify-center cursor-pointer">
                         Dodaj plan treningowy
                     </button>
                 </div>
             </form>
         </div>
         
-        <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto mt-8">
+        <div class="bg-white p-6 sm:p-8 rounded-xl w-full mt-8">
             <h2 class="text-2xl font-semibold mb-5 text-gray-700 border-b pb-4">Twoje plany treningowe</h2>
             <div v-if="props.trainingPlans && props.trainingPlans.length > 0" class="space-y-4">
                 <div v-for="plan in props.trainingPlans" :key="plan.id">
-                    <div class="p-4 border bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors" @click="openDetails(plan)">
+                    <div class="p-4 border bg-[#241F20] rounded-lg cursor-pointer" @click="openDetails(plan)">
                         <div class="flex justify-between items-center">
                             <div>
-                                <h3 class="font-bold text-lg text-gray-800">{{ plan.title }}</h3>
-                                <p class="text-sm text-gray-600">Utworzono: {{ plan.created_at.split('T')[0] }}</p>
-                                <p class="text-sm text-gray-600" v-if="props.user.role !== 'trainer'">Trener: {{ plan.trainerName }}</p>
-                                <p class="text-sm text-gray-600" v-if="props.user.role !== 'client'">Podopieczny: {{ plan.menteeName }}</p>
+                                <h3 class="font-bold text-lg text-[#F5F570]">{{ plan.title }}</h3>
+                                <p class="text-sm text-white">Utworzono: {{ plan.created_at.split('T')[0] }}</p>
+                                <p class="text-sm text-white" v-if="props.user.role !== 'trainer'">Trener: {{ plan.trainerName }}</p>
+                                <p class="text-sm text-white" v-if="props.user.role !== 'client'">Podopieczny: {{ plan.menteeName }}</p>
                             </div>
                             <div class="flex items-center">
                                 <button v-if="props.user.role === 'trainer'" class="text-sm text-red-500 hover:text-red-700 mr-4" @click.stop="deletePlan(plan.id)">Usuń</button>

@@ -180,90 +180,167 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="flex h-[600px] bg-gray-100 border rounded-lg overflow-hidden">
+    <div class="flex flex-col md:flex-row h-[850px] bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
         <!-- Conversation List -->
-        <div class="w-1/3 bg-white border-r overflow-y-auto">
-            <div class="p-4 border-b">
-                <h2 class="text-xl font-bold">Wiadomości</h2>
+        <div class="w-full md:w-1/3 h-64 md:h-auto border-b md:border-b-0 md:border-r border-gray-100 bg-white flex flex-col shrink-0">
+            <div class="p-4 md:p-6 border-b border-gray-100 bg-white z-10">
+                <h2 class="text-xl md:text-2xl font-bold text-[#241F20]">Wiadomości</h2>
+                <p class="text-xs text-gray-400 mt-1 hidden md:block">Twoje ostatnie konwersacje</p>
             </div>
-            <div v-if="loading" class="p-4 text-center text-gray-500">
-                <i class="fa-solid fa-spinner fa-spin mr-2"></i> Ładowanie...
+            
+            <div v-if="loading" class="flex-1 flex items-center justify-center text-gray-400">
+                <div class="flex flex-col items-center gap-2">
+                    <svg class="animate-spin h-6 w-6 text-[#F5F570]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="text-sm">Ładowanie...</span>
+                </div>
             </div>
-            <ul>
-                <li v-for="conversation in localConversations" :key="conversation.chat_id"
-                    @click="selectConversation(conversation)"
-                    class="flex items-center p-4 cursor-pointer hover:bg-yellow-100 transition-colors duration-200"
-                    :class="{ 
-                        'bg-white': selectedConversation && selectedConversation.chat_id === conversation.chat_id,
-                        'blinking-unread': conversation.read === false && conversation.last_sender_id !== currentUser.uid && selectedConversation?.chat_id !== conversation.chat_id
-                    }">
-                    <img :src="conversation.otherUser.imageURL || '/images/no_user.png'" alt="User avatar" class="w-12 h-12 rounded-full mr-4 object-cover">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between">
-                            <span class="font-semibold truncate">{{ conversation.otherUser.name }}</span>
-                            <span class="text-xs text-gray-500 whitespace-nowrap ml-2">
-                                {{ conversation.last_message?.timestamp ? new Date(conversation.last_message.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '' }}
-                            </span>
+
+            <div v-else class="flex-1 overflow-y-auto custom-scrollbar">
+                <ul class="space-y-1 p-3">
+                    <li v-for="conversation in localConversations" :key="conversation.chat_id"
+                        @click="selectConversation(conversation)"
+                        class="relative group flex items-center p-3.5 rounded-xl cursor-pointer transition-all duration-200"
+                        :class="[
+                            selectedConversation && selectedConversation.chat_id === conversation.chat_id 
+                                ? 'bg-gray-50 ring-1 ring-gray-200' 
+                                : 'hover:bg-gray-50',
+                            conversation.read === false && conversation.last_sender_id !== currentUser.uid && selectedConversation?.chat_id !== conversation.chat_id
+                                ? 'bg-yellow-50/50'
+                                : ''
+                        ]">
+                        
+                        <!-- Unread Indicator Dot -->
+                        <div v-if="conversation.read === false && conversation.last_sender_id !== currentUser.uid && selectedConversation?.chat_id !== conversation.chat_id" 
+                             class="absolute left-1 top-1/2 -translate-y-1/2 w-1.5 h-1.5 bg-red-500 rounded-full shadow-sm"></div>
+
+                        <div class="relative flex-shrink-0">
+                            <img :src="conversation.otherUser.imageURL || '/images/no_user.png'" 
+                                 class="w-12 h-12 rounded-full object-cover border border-gray-100 shadow-sm"
+                                 alt="User avatar">
                         </div>
-                        <p class="text-sm text-gray-600 truncate">
-                            {{ conversation.last_message?.text }}
-                        </p>
-                    </div>
-                </li>
-            </ul>
+
+                        <div class="ml-4 flex-1 min-w-0">
+                            <div class="flex justify-between items-baseline mb-0.5">
+                                <span class="font-bold text-gray-800 truncate" :class="{'text-[#241F20]': selectedConversation?.chat_id === conversation.chat_id}">
+                                    {{ conversation.otherUser.name }}
+                                </span>
+                                <span class="text-[10px] text-gray-400 font-medium whitespace-nowrap ml-2">
+                                    {{ conversation.last_message?.timestamp ? new Date(conversation.last_message.timestamp.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '' }}
+                                </span>
+                            </div>
+                            <p class="text-sm truncate text-gray-500 group-hover:text-gray-600 transition-colors" 
+                               :class="{'font-medium text-gray-900': conversation.read === false && conversation.last_sender_id !== currentUser.uid}">
+                                {{ conversation.last_message?.text || 'Brak wiadomości' }}
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
         </div>
 
         <!-- Chat Window -->
-        <div class="w-2/3 flex flex-col bg-white">
-            <div v-if="selectedConversation" class="flex flex-col h-full">
-                 <div class="flex items-center p-4 bg-white border-b shadow-sm z-10">
-                    <img :src="selectedConversation.otherUser.imageURL || '/images/no_user.png'" alt="User avatar" class="w-10 h-10 rounded-full mr-3 object-cover">
-                    <h2 class="text-lg font-semibold">{{ selectedConversation.otherUser.name }}</h2>
-                </div>
-                <div class="flex-1 p-4 overflow-y-auto bg-gray-100" ref="messagesContainer">
-                    <div v-if="messages.length === 0" class="text-center text-gray-500 mt-10">
-                        Brak wiadomości. Zacznij rozmowę!
+        <div class="w-full md:w-2/3 flex flex-col bg-[#FDFBF7] relative flex-1 overflow-hidden">
+            <template v-if="selectedConversation">
+                <!-- Chat Header -->
+                <div class="flex items-center px-6 py-4 bg-white/80 backdrop-blur-md border-b border-gray-100 shadow-sm z-20">
+                    <img :src="selectedConversation.otherUser.imageURL || '/images/no_user.png'" 
+                         class="w-11 h-11 rounded-full object-cover shadow-sm border-2 border-white ring-1 ring-gray-100 mr-4">
+                    <div>
+                         <h2 class="text-lg font-bold text-gray-800 leading-tight">
+                            {{ selectedConversation.otherUser.name }}
+                        </h2>
                     </div>
-                    <div v-for="message in messages" :key="message.id" class="mb-4">
-                        <div :class="['flex', isSender(message.sender_id) ? 'justify-end' : 'justify-start']">
+                </div>
+
+                <!-- Messages Area -->
+                <div class="flex-1 p-6 overflow-y-auto custom-scrollbar scroll-smooth space-y-6" ref="messagesContainer">
+                    <div v-if="messages.length === 0" class="flex flex-col items-center justify-center h-full text-center space-y-4 opacity-60">
+                         <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
+                         </div>
+                        <p class="text-gray-500">To początek twojej historii z {{ selectedConversation.otherUser.name.split(' ')[0] }}.<br>Przywitaj się!</p>
+                    </div>
+
+                    <div v-for="(message, index) in messages" :key="message.id" class="group flex flex-col">
+                        <div :class="['flex items-end gap-2', isSender(message.sender_id) ? 'justify-end' : 'justify-start']">
+                            
+                            <!-- Avatar for receiver -->
+                            <img v-if="!isSender(message.sender_id)" 
+                                 :src="selectedConversation.otherUser.imageURL || '/images/no_user.png'" 
+                                 class="w-6 h-6 rounded-full object-cover mb-1 opacity-70">
+
+                            <!-- Message Bubble -->
                             <div :class="[
-                                'max-w-xs lg:max-w-md px-4 py-2 rounded-lg',
-                                isSender(message.sender_id) ? 'bg-yellow-500 text-[#241F20]' : 'bg-white text-gray-800'
+                                'max-w-[75%] px-5 py-3 shadow-sm relative text-sm leading-relaxed transition-all duration-200',
+                                isSender(message.sender_id) 
+                                    ? 'bg-[#241F20] text-white rounded-2xl rounded-tr-sm hover:shadow-md' 
+                                    : 'bg-white text-gray-800 rounded-2xl rounded-tl-sm border border-gray-100 hover:shadow-md'
                             ]">
-                                <p class="text-sm">{{ message.text }}</p>
-                                <div class="text-xs text-right mt-1 font-semibold" :class="[isSender(message.sender_id) ? 'text-black' : 'text-black']">
-                                    {{ message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : '...' }}
-                                </div>
+                                {{ message.text }}
                             </div>
+                        </div>
+                        
+                        <!-- Timestamp -->
+                        <div :class="['text-[10px] text-gray-400 mt-1', isSender(message.sender_id) ? 'text-right pr-1' : 'text-left pl-9']">
+                            {{ message.timestamp ? new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Wysyłanie...' }}
                         </div>
                     </div>
                 </div>
-                <div class="p-4 bg-white border-t">
-                    <form @submit.prevent="sendMessage" class="flex items-center">
-                        <input type="text" v-model="newMessage" placeholder="Wpisz wiadomość..."
-                            class="w-full px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-500" />
-                        <button type="submit"
-                            class="ml-3 px-6 py-2 bg-yellow-500 text-[#241F20] font-bold rounded-full hover:bg-yellow-600 focus:outline-none cursor-pointer transition-colors duration-200">
-                            Wyślij
+
+                <!-- Input Area -->
+                <div class="p-5 bg-white border-t border-gray-100 z-20">
+                    <form @submit.prevent="sendMessage" class="flex items-center gap-3 bg-gray-50 p-1.5 rounded-full border border-gray-200 focus-within:border-[#F5F570] focus-within:ring-2 focus-within:ring-[#F5F570]/20 transition-all duration-200 shadow-sm">
+                        <input 
+                            type="text" 
+                            v-model="newMessage" 
+                            placeholder="Napisz wiadomość..."
+                            class="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 px-4 py-2.5 text-gray-700 placeholder-gray-400 text-sm" 
+                        />
+                        <button 
+                            type="submit"
+                            :disabled="!newMessage.trim()"
+                            class="p-2.5 bg-[#F5F570] text-[#241F20] rounded-full hover:bg-[#e4e460] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-sm hover:shadow transform active:scale-95 group">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:translate-x-0.5 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                            </svg>
                         </button>
                     </form>
                 </div>
-            </div>
-             <div v-else class="flex items-center justify-center h-full text-gray-500">
-                Wybierz konwersację, aby rozpocząć czat.
+            </template>
+
+            <!-- Empty State Selection -->
+             <div v-else class="flex flex-col items-center justify-center h-full text-gray-400 bg-gray-50/50">
+                <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">Witaj w komunikatorze</h3>
+                <p class="text-gray-500 text-sm">Wybierz osobę z listy po lewej, aby rozpocząć rozmowę.</p>
             </div>
         </div>
     </div>
 </template>
 
 <style scoped>
-@keyframes blink {
-  0% { background-color: #fef9c3; }
-  50% { background-color: #fef08a; }
-  100% { background-color: #fef9c3; }
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
 }
-
-.blinking-unread {
-  animation: blink 2s infinite;
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 20px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background-color: #94a3b8;
 }
 </style>

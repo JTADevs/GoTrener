@@ -35,9 +35,11 @@
 </script>
 
 <template>
-    <div v-if="!loggedUser || loggedUser.role!=='brak'">
+    <div v-if="!loggedUser || loggedUser.role!=='brak'" class="flex flex-col min-h-screen">
         <Header/>
-        <slot/>
+        <main class="flex-grow w-full flex flex-col">
+            <slot/>
+        </main>
         <Footer/>
     </div>
     <ForceRoleSelect v-if="loggedUser && loggedUser.role==='brak'"/>
