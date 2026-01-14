@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Services\FirebaseService;
 use Google\Cloud\Firestore\FieldValue;
 use Illuminate\Support\Str;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Request;
 
 class User implements UserInterface
 {
@@ -203,11 +205,29 @@ class User implements UserInterface
         
         $deletedEvent = $deletedEventRef->snapshot()->data();
 
-        if(!empty($deletedEvent['trainerUid']) && !empty($deletedEvent['menteeUid'])){
+        if(!empty($deletedEvent['trainingId'])){
             $this->firebase->firestore()->database()
                 ->collection('trainings')
                 ->document($deletedEvent['trainingId'])
                 ->set(['status' => 'Anulowany'], ['merge' => true]);
+
+            if (isset($deletedEvent['trainerUid']) && isset($deletedEvent['menteeUid'])) {
+                $otherUid = ($deletedEvent['trainerUid'] == session('loggedUser.uid')) ? $deletedEvent['menteeUid'] : $deletedEvent['trainerUid'];
+
+                if ($otherUid) {
+                    $otherUserEvents = $this->firebase->firestore()
+                        ->database()
+                        ->collection('users')
+                        ->document($otherUid)
+                        ->collection('personalEvents')
+                        ->where('trainingId', '=', $deletedEvent['trainingId'])
+                        ->documents();
+
+                    foreach ($otherUserEvents as $event) {
+                        $event->reference()->delete();
+                    }
+                }
+            }
         }
 
         $deletedEventRef->delete();
@@ -364,6 +384,10 @@ class User implements UserInterface
             }
         }
 
+        usort($trainings, function ($a, $b) {
+            return strcmp($b['status'] ?? '', $a['status'] ?? '');
+        });
+
         return $trainings;
     }
 
@@ -377,7 +401,7 @@ class User implements UserInterface
         $trainingSnapshot = $trainingRef->snapshot();
 
         if (!$trainingSnapshot->exists()) {
-             return false;
+            return false;
         }
 
         $trainingData = $trainingSnapshot->data();

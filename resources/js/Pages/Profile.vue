@@ -4,10 +4,10 @@
     import Stats from '../Components/Stats.vue';
     import Communicator from '../Components/Communicator.vue';
     import Layout from '../Layouts/Layout.vue';
-    import { ref } from 'vue';
+    import { ref, onMounted, onUnmounted } from 'vue';
     import Trainings from '../Components/Trainings.vue';
     import Diet from '../Components/Diet.vue';
-import TrainingPlans from '../Components/TrainingPlans.vue';
+    import TrainingPlans from '../Components/TrainingPlans.vue';
 
     const props = defineProps({
         user: Object,
@@ -19,7 +19,33 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
     });
 
     const sidebarOpen = ref(false);
-    const activeView = ref(props.view === 'komunikator' ? 'komunikator' : 'profil');
+    const activeView = ref(props.view || 'profil');
+
+    const updateViewFromUrl = () => {
+        const params = new URLSearchParams(window.location.search);
+        const view = params.get('view');
+        if (view) {
+            activeView.value = view;
+        } else {
+            activeView.value = 'profil';
+        }
+    }
+
+    const changeView = (viewName) => {
+        activeView.value = viewName;
+        const url = new URL(window.location.href);
+        url.searchParams.set('view', viewName);
+        window.history.pushState({}, '', url);
+        sidebarOpen.value = false; // Close sidebar on mobile on selection
+    };
+
+    onMounted(() => {
+        window.addEventListener('popstate', updateViewFromUrl);
+    });
+
+    onUnmounted(() => {
+        window.removeEventListener('popstate', updateViewFromUrl);
+    });
 </script>
 
 <template>
@@ -38,31 +64,31 @@ import TrainingPlans from '../Components/TrainingPlans.vue';
 
                     <!-- Sidebar Content -->
                     <nav :class="sidebarOpen ? 'block' : 'hidden'" class="lg:block py-4">
-                        <button @click="activeView = 'profil'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'profil' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('profil')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'profil' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-user w-6 text-center"></i>
                             <span class="mx-4 font-medium">Profil</span>
                         </button>
-                        <button @click="activeView = 'calendar'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'calendar' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('calendar')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'calendar' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-calendar-days w-6 text-center"></i>
                             <span class="mx-4 font-medium">Kalendarz</span>
                         </button>
-                        <button @click="activeView = 'treningi'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'treningi' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('treningi')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'treningi' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-dumbbell w-6 text-center"></i>
                             <span class="mx-4 font-medium">Moje treningi</span>
                         </button>
-                        <button @click="activeView = 'dieta'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'dieta' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('dieta')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'dieta' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-utensils w-6 text-center"></i>
                             <span class="mx-4 font-medium">Moje diety</span>
                         </button>
-                        <button @click="activeView = 'plan'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'plan' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('plan')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'plan' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-clipboard-list w-6 text-center"></i>
                             <span class="mx-4 font-medium">Moje plany</span>
                         </button>
-                        <button @click="activeView = 'komunikator'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('komunikator')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-comments w-6 text-center"></i>
                             <span class="mx-4 font-medium">Komunikator</span>
                         </button>
-                        <button @click="activeView = 'statystyki'" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'statystyki' ? 'active-link' : 'hover:bg-gray-700'">
+                        <button @click="changeView('statystyki')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'statystyki' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-chart-line w-6 text-center"></i>
                             <span class="mx-4 font-medium">Statystyki</span>
                         </button>
