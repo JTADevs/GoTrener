@@ -158,15 +158,15 @@ const filteredEvents = computed(() => {
 <template>
     <div class="bg-white shadow-sm p-4 md:p-6 border border-gray-200 overflow-x-auto">
         <div class="flex items-center justify-between mb-4">
-            <button @click="previousMonth" :disabled="!canGoToPreviousMonth" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors">
-                &lt;
+            <button @click="previousMonth" :disabled="!canGoToPreviousMonth" class="px-4 py-2 bg-[#241F20] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors hover:enabled:bg-[#F5F570] hover:enabled:text-[#241F20]">
+                <i class="fa-solid fa-chevron-left"></i>
             </button>
             <h2 class="text-lg font-semibold text-gray-900 capitalize text-center">
                 {{ monthName }} {{ year }}
             </h2>
-            <button @click="nextMonth" class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 cursor-pointer transition-colors">
-                &gt;
-            </button>
+            <button @click="nextMonth" class="px-4 py-2 bg-[#241F20] text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors hover:enabled:bg-[#F5F570] hover:enabled:text-[#241F20]">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>   
         </div>
         <table class="w-full text-sm text-left text-gray-500 border-collapse">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50">

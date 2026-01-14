@@ -36,7 +36,7 @@
         const url = new URL(window.location.href);
         url.searchParams.set('view', viewName);
         window.history.pushState({}, '', url);
-        sidebarOpen.value = false; // Close sidebar on mobile on selection
+        sidebarOpen.value = false;
     };
 
     onMounted(() => {
