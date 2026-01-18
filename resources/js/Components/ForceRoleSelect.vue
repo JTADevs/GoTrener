@@ -33,7 +33,7 @@ const cancelSelection = () => {
 };
 
 const roleLabel = (role) => {
-    return role === 'client' ? 'Klient' : 'Trener';
+    return role === 'client' ? 'Podopieczny' : 'Trener';
 };
 </script>
 
@@ -42,7 +42,7 @@ const roleLabel = (role) => {
     <div v-if="!showModal" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-8 p-10 bg-black/40 backdrop-blur-md rounded-3xl shadow-2xl border border-white/10">
         <h2 class="text-4xl font-bold text-white tracking-wide drop-shadow-lg">Kim jesteś?</h2>
         <div class="flex flex-col sm:flex-row gap-6">
-            <button @click="selectRole('client')" class="min-w-[200px] px-8 py-4 bg-[#F5F570] text-[#241F20] text-xl font-bold rounded-xl shadow-lg hover:bg-[#e6e665] hover:scale-105 transition-all duration-300 transform cursor-pointer">Klient</button>
+            <button @click="selectRole('client')" class="min-w-[200px] px-8 py-4 bg-[#F5F570] text-[#241F20] text-xl font-bold rounded-xl shadow-lg hover:bg-[#e6e665] hover:scale-105 transition-all duration-300 transform cursor-pointer">Podopieczny</button>
             <button @click="selectRole('trainer')" class="min-w-[200px] px-8 py-4 bg-[#241F20] text-[#F5F570] text-xl font-bold rounded-xl shadow-lg border-2 border-[#F5F570] hover:bg-[#1a1617] hover:scale-105 transition-all duration-300 transform cursor-pointer">Trener</button>
         </div>
     </div>

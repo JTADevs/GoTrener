@@ -268,7 +268,7 @@ const filteredEvents = computed(() => {
                     </p>
                     <p class="text-sm text-gray-600 mt-2">
                         Krótki opis wydarzenia:
-                        <textarea v-model="form.eventDescription" name="eventDescription" rows="3" class="mt-2 border border-gray-300 rounded-lg px-2 py-1 w-full" placeholder="Np. Trening z klientem/trenerem"></textarea>
+                        <textarea v-model="form.eventDescription" name="eventDescription" rows="3" class="mt-2 border border-gray-300 rounded-lg px-2 py-1 w-full" placeholder="Np. Trening z podopiecznym/trenerem"></textarea>
                     </p>
                     <p class="mt-2">
                         <button type="submit" class="px-4 py-2 bg-[#F5F570] text-[#241F20] rounded-lg hover:bg-[#E6E65C] cursor-pointer transition-colors">

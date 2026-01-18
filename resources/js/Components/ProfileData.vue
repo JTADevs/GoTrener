@@ -225,7 +225,7 @@ const handleCityChange = (e) => {
                                 <div class="space-y-6">
                                     <div class="space-y-2">
                                         <label for="bio" class="block text-sm font-semibold text-gray-700">Opis (Bio)</label>
-                                        <textarea id="bio" v-model="form.bio" placeholder="Napisz coś o sobie, co przyciągnie klientów..." class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#F5F570] focus:border-[#F5F570] transition-colors h-32 resize-y outline-none shadow-sm"></textarea>
+                                        <textarea id="bio" v-model="form.bio" placeholder="Napisz coś o sobie, co przyciągnie podopiecznych..." class="w-full px-4 py-3 bg-white border border-gray-300 text-gray-900 rounded-xl focus:ring-2 focus:ring-[#F5F570] focus:border-[#F5F570] transition-colors h-32 resize-y outline-none shadow-sm"></textarea>
                                     </div>
                                     <div class="space-y-2">
                                         <label for="motto" class="block text-sm font-semibold text-gray-700">Motto</label>

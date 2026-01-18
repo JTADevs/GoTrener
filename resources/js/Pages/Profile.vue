@@ -8,6 +8,8 @@
     import Trainings from '../Components/Trainings.vue';
     import Diet from '../Components/Diet.vue';
     import TrainingPlans from '../Components/TrainingPlans.vue';
+    import Promotion from '../Components/Promotion.vue';
+    import Ai from '../Components/AI.vue';
 
     const props = defineProps({
         user: Object,
@@ -92,6 +94,16 @@
                             <i class="fa-solid fa-chart-line w-6 text-center"></i>
                             <span class="mx-4 font-medium">Statystyki</span>
                         </button>
+                        <div v-if="user.role === 'trainer'">
+                            <button @click="changeView('promowanie')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer text-[#F5F570]" :class="activeView === 'promowanie' ? 'active-link' : 'hover:bg-gray-700'">
+                                <i class="fa-solid fa-bullhorn w-6 text-center"></i>
+                                <span class="mx-4 font-medium">Promowanie</span>
+                            </button>
+                            <button @click="changeView('ai_plans')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer text-[#F5F570]" :class="activeView === 'ai_plans' ? 'active-link' : 'hover:bg-gray-700'">
+                                <i class="fa-solid fa-robot w-6 text-center"></i>
+                                <span class="mx-4 font-medium">Plany treningowe AI</span>
+                            </button>
+                        </div>
                     </nav>
                 </aside>
 
@@ -105,6 +117,9 @@
                         <TrainingPlans v-if="activeView === 'plan'" :user="user" :mentees="mentees" :trainingPlans="trainingPlans"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" :user="user"/>
+                        <Promotion v-if="activeView === 'promowanie'" :user="user"/>
+                        <Ai v-if="activeView === 'ai_plans'" :user="user"/>
+
                     </div>
                 </main>
             </div>
