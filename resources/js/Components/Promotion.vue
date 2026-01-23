@@ -1,59 +1,117 @@
 <script setup>
     import { ref, onMounted } from 'vue';
+    import { Purchases, LogLevel } from '@revenuecat/purchases-js';
+    import axios from 'axios';
 
     const props = defineProps({
         user: Object,
     });
 
-    onMounted(() => {
+    const plans = ref([]);
+    const selectedPlan = ref(null);
+    const isLoading = ref(true);
+
+    const REVENUECAT_API_KEY = import.meta.env.VITE_REVENUECAT_API_KEY; 
+
+    onMounted(async () => {
         if (props.user.role !== 'trainer') {
             window.location.href = '/';
         }
+
+        try {
+            Purchases.setLogLevel(LogLevel.Debug);
+
+            const appUserId = props.user?.uid ? String(props.user.uid) : null;
+            
+            if (appUserId) {
+                Purchases.configure({
+                    apiKey: REVENUECAT_API_KEY,
+                    appUserId: appUserId,
+                });
+            } else {
+
+                isLoading.value = false;
+                return;
+            }
+
+            const offerings = await Purchases.getSharedInstance().getOfferings();
+            
+            const currentOffering = offerings.current || offerings.all['GoTrener_promotion'];
+
+            if (currentOffering && currentOffering.availablePackages.length > 0) {
+                plans.value = currentOffering.availablePackages
+                    .map(pkg => mapPackageToPlan(pkg))
+                    .filter(p => p !== null)
+                    .sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+            } else {
+
+            }
+        } catch (e) {
+
+        } finally {
+            isLoading.value = false;
+        }
     });
 
-    const selectedPlan = ref(null);
+    const mapPackageToPlan = (pkg) => {
+        const product = pkg.webBillingProduct || pkg.rcBillingProduct;
+        
+        if (!product) {
 
-    const plans = [
-        {
-            id: 1,
-            name: 'Miesięczny',
-            price: '19.99',
-            duration: 'za miesiąc',
-            period: 'msc',
-            popular: false,
-            desc: 'Dla tych, którzy chcą spróbować.'
-        },
-        {
-            id: 2,
-            name: 'Kwartalny',
-            price: '49.99',
-            duration: 'za 3 miesiące',
-            period: '3 msc',
-            popular: true,
-            desc: 'Najczęściej wybierany pakiet.',
-            savings: 'Oszczędzasz 17%'
-        },
-        {
-            id: 3,
-            name: 'Półroczny',
-            price: '89.99',
-            duration: 'za 6 miesięcy',
-            period: '6 msc',
-            popular: false,
-            desc: 'Długoterminowa współpraca.',
-            savings: 'Oszczędzasz 25%'
-        },
-        {
-            id: 4,
-            name: 'Roczny',
-            price: '159.99',
-            duration: 'za rok',
-            period: 'rok',
-            popular: false,
-            desc: 'Maksymalne korzyści.',
-            savings: 'Oszczędzasz 33%'
-        },
-    ];
+            return null;
+        }
+
+        const isMonthly = pkg.identifier === 'monthly';
+        const isQuarterly = pkg.identifier === 'quarterly';
+        const isHalfYear = pkg.identifier === 'semi_annual';
+        const isYearly = pkg.identifier === 'yearly';
+
+        let name = product.title || pkg.identifier;
+        let period = 'okres';
+        let duration = 'za okres';
+        let desc = product.description;
+        let savings = null;
+        let popular = false;
+
+        if (isMonthly) {
+            name = 'Miesięczny';
+            period = 'msc';
+            duration = 'za miesiąc';
+            desc = 'Dla tych, którzy chcą spróbować.';
+        } else if (isQuarterly) {
+            name = 'Kwartalny';
+            period = '3 msc';
+            duration = 'za 3 miesiące';
+            desc = 'Najczęściej wybierany pakiet.';
+            popular = true;
+            savings = 'Oszczędzasz 17%';
+        } else if (isHalfYear) {
+            name = 'Półroczny';
+            period = '6 msc';
+            duration = 'za 6 miesięcy';
+            desc = 'Długoterminowa współpraca.';
+            savings = 'Oszczędzasz 25%';
+        } else if (isYearly) {
+            name = 'Roczny';
+            period = 'rok';
+            duration = 'za rok';
+            desc = 'Maksymalne korzyści.';
+            savings = 'Oszczędzasz 33%';
+        }
+
+        return {
+            id: pkg.identifier,
+            rcPackage: pkg,
+            name: name,
+            price: (product.currentPrice.amount / 100).toFixed(2),
+            currency: product.currentPrice.currency,
+            duration: duration,
+            period: period,
+            popular: popular,
+            desc: desc,
+            savings: savings
+        };
+    };
 
     const selectPlan = (plan) => {
         selectedPlan.value = plan;
@@ -69,10 +127,25 @@
         selectedPlan.value = null;
     };
 
-    const purchasePlan = () => {
-        if (!selectedPlan.value) return;
-        alert(`Rozpoczynam płatność za: ${selectedPlan.value.name} - ${selectedPlan.value.price} zł`);
-        // Tutaj logika integracji z płatnościami
+    const purchasePlan = async () => {
+        if (!selectedPlan.value || !selectedPlan.value.rcPackage) return;
+        
+        try {
+            await Purchases.getSharedInstance().purchase({ rcPackage: selectedPlan.value.rcPackage });
+            
+            await axios.post('/payment/promotion', {
+                package: {
+                    id: selectedPlan.value.id,
+                    name: selectedPlan.value.name,
+                    price: selectedPlan.value.price,
+                    currency: selectedPlan.value.currency,
+                    duration: selectedPlan.value.duration
+                },
+                user_id: props.user.uid
+            });
+
+            window.location.reload();
+        } catch (e) {}
     };
 </script>
 
@@ -86,7 +159,15 @@
         </div>
 
         <!-- Pricing Cards -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
+        <div v-if="isLoading" class="flex justify-center py-12">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#F5F570]"></div>
+        </div>
+
+        <div v-else-if="plans.length === 0" class="text-center py-12 text-gray-500">
+            Brak dostępnych planów promocyjnych.
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4">
             <div v-for="plan in plans" :key="plan.id" 
                 class="relative flex flex-col p-6 bg-white rounded-2xl shadow-lg border-2 transition-all duration-300 cursor-pointer"
                 :class="[

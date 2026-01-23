@@ -16,6 +16,7 @@
     },
     "dependencies": {
         "@inertiajs/vue3": "^2.2.18",
+        "@revenuecat/purchases-js": "^1.24.1",
         "@vitejs/plugin-vue": "^6.0.2",
         "chart.js": "^4.5.1",
         "firebase": "^12.6.0",

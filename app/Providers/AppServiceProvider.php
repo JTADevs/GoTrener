@@ -11,7 +11,8 @@ use App\Repository\Trainer;
 use App\Repository\TrainerInterface;
 use App\Repository\User;
 use App\Repository\UserInterface;
-
+use App\Repository\Payment;
+use App\Repository\PaymentInterface;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -23,6 +24,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(UserInterface::class, User::class);
         $this->app->singleton(TrainerInterface::class, Trainer::class);
         $this->app->singleton(ChatInterface::class, Chat::class);
+        $this->app->singleton(PaymentInterface::class, Payment::class);
     }
 
     /**

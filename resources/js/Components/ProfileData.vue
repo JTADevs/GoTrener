@@ -133,6 +133,28 @@ const handleCityChange = (e) => {
 
     citySuggestions.value = filtered.slice(0, 15);
 }
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleDateString('pl-PL', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+};
+
+const getDaysLeft = (dateString) => {
+    if (!dateString) return '';
+    const today = new Date();
+    const target = new Date(dateString);
+    const diffTime = target - today;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays < 0) return 'wygasło';
+    if (diffDays === 0) return 'dzisiaj';
+    if (diffDays === 1) return 'jutro';
+    return `${diffDays} dni`;
+};
 </script>
 
 <template>
@@ -211,6 +233,66 @@ const handleCityChange = (e) => {
                                         <input type="radio" name="gender" v-model="form.gender" value="women" class="w-5 h-5 text-[#F5F570] border-gray-300 focus:ring-[#F5F570] cursor-pointer">
                                         <span class="ml-2 text-gray-700 group-hover:text-gray-900 transition-colors">Kobieta</span>
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Trainer promotion -->
+                        <div v-if="user.role === 'trainer'" class="overflow-hidden">
+                            <div class="py-5 border-b border-gray-100 flex items-center">
+                                <span class="w-1 h-6 bg-[#F5F570] rounded-r mr-3"></span>
+                                <h2 class="text-xl font-bold text-gray-800">Status Promowania</h2>
+                            </div>
+                            <div class="p-6 md:p-8">
+                                <!-- Premium Active -->
+                                <div v-if="user.is_premium && user.is_premium_date" class="relative overflow-hidden bg-[#241F20] rounded-2xl p-6 text-white space-y-6">
+                                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-14 h-14 rounded-xl bg-[#F5F570] flex items-center justify-center text-[#241F20] shadow-sm shrink-0">
+                                                <i class="fa-solid fa-crown text-2xl"></i>
+                                            </div>
+                                            <div>
+                                                <h3 class="text-lg font-bold text-[#F5F570]">Konto Premium Aktywne</h3>
+                                                <p class="text-gray-300 text-sm">Twój profil jest wyróżniony i wyświetla się wyżej w wynikach wyszukiwania.</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="flex items-center gap-6 bg-white/5 p-4 rounded-xl border border-white/10">
+                                            <div class="text-right">
+                                                <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-1">Wygasa</p>
+                                                <p class="text-white font-bold whitespace-nowrap">{{ formatDate(user.is_premium_date) }}</p>
+                                            </div>
+                                            <div class="w-px h-8 bg-white/10"></div>
+                                            <div class="text-right">
+                                                <p class="text-xs text-[#F5F570]/70 uppercase font-bold tracking-wider mb-1">Pozostało</p>
+                                                <p class="text-[#F5F570] font-bold whitespace-nowrap">{{ getDaysLeft(user.is_premium_date) }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="flex justify-end pt-4 border-t border-white/10 relative z-10">
+                                        <a href="/profil?view=promowanie" class="w-full md:w-auto px-6 py-3 bg-[#F5F570] text-[#241F20] font-bold rounded-xl shadow-lg hover:bg-[#e4e46a] transition-colors duration-200 flex items-center justify-center gap-2">
+                                            <span>Przedłuż pakiet</span>
+                                            <i class="fa-solid fa-arrow-right text-sm"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                
+                                <!-- No Premium -->
+                                <div v-else class="flex flex-col md:flex-row items-center justify-between gap-6">
+                                    <div class="flex items-center gap-4 w-full md:w-auto">
+                                        <div class="w-14 h-14 rounded-xl bg-gray-100 flex items-center justify-center text-gray-400 shrink-0">
+                                            <i class="fa-solid fa-arrow-trend-up text-2xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-bold text-gray-800">Promowanie profilu</h3>
+                                            <p class="text-gray-500 text-sm">Wyróżnij się na tle innych i zdobywaj więcej klientów.</p>
+                                        </div>
+                                    </div>
+                                    <a href="/profil?view=promowanie" class="w-full md:w-auto px-6 py-3 bg-[#241F20] text-[#F5F570] font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                                        <span>Włącz promowanie</span>
+                                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

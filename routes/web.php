@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrainerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PaymentsController;
 use App\Http\Middleware\EnsureUserIsLogged;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -46,4 +47,5 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/training-plan-downloadPDF/{id}', [UserController::class, 'downloadTrainingPlanPDF']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
+    Route::post('/payment/promotion', [PaymentsController::class, 'promotion']);
 });
