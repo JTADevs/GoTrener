@@ -74,11 +74,12 @@
         <section class="flex flex-col min-h-[calc(100vh-200px)] bg-gray-100 text-gray-800">
 
             <!-- Hero Section -->
-            <div class="relative w-full h-[50vh] bg-cover bg-center" style="background-image: url('/images/gym.jpg');">
-                <div class="absolute inset-0 bg-opacity-50 flex flex-col justify-center items-center text-center text-white p-4">
-                    <h1 class="text-5xl md:text-6xl font-extrabold tracking-tight leading-tight">ODKRYJ SWÓJ POTENCJAŁ</h1>
-                    <p class="mt-4 text-lg md:text-xl max-w-2xl">Znajdź idealnego trenera personalnego, który pomoże Ci osiągnąć Twoje cele fitness.</p>
-                    <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mt-8">
+            <div class="relative w-full min-h-[60vh] md:min-h-[50vh] bg-cover bg-center flex items-center justify-center" style="background-image: url('/images/gym.jpg');">
+                <div class="absolute inset-0 bg-black/50"></div>
+                <div class="relative z-10 flex flex-col justify-center items-center text-center text-white p-4 w-full">
+                    <h1 class="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight drop-shadow-lg">ODKRYJ SWÓJ POTENCJAŁ</h1>
+                    <p class="mt-4 text-sm sm:text-lg md:text-xl max-w-2xl drop-shadow-md px-4">Znajdź idealnego trenera personalnego, który pomoże Ci osiągnąć Twoje cele fitness.</p>
+                    <Form @submit.prevent="submitSearch" class="flex flex-col md:flex-row items-center justify-center gap-4 w-full px-4 md:px-0 max-w-3xl mt-8">
                         <div class="relative flex-grow w-full min-w-0">
                             <i class="fa-solid fa-location-dot absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 z-10"></i>
                             <input type="text" id="city" v-model="search.location" @input="handleCityChange" list="city-suggestions" placeholder="Miasto" class="w-full p-3 pl-12 border-2 border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-yellow-400 transition-shadow bg-white/90 text-gray-800 placeholder-gray-500">
@@ -112,37 +113,37 @@
             </div>
 
             <!-- How It Works Section -->
-            <div class="w-full py-16 bg-white">
-                <div class="w-[80%] mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <div class="w-full py-12 md:py-16 bg-white">
+                <div class="w-[90%] md:w-[80%] max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 text-center">
                     <div class="flex flex-col items-center space-y-4">
-                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg">
+                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-search fa-3x text-[#241F20]"></i>
                         </div>
-                        <h3 class="text-2xl font-bold">1. Wyszukaj</h3>
-                        <p class="text-gray-600">Znajdź trenera dopasowanego do Twoich potrzeb, specjalizacji i lokalizacji.</p>
+                        <h3 class="text-xl md:text-2xl font-bold">1. Wyszukaj</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Znajdź trenera dopasowanego do Twoich potrzeb, specjalizacji i lokalizacji.</p>
                     </div>
                     <div class="flex flex-col items-center space-y-4">
-                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg">
+                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-calendar-alt fa-3x text-[#241F20]"></i>
                         </div>
-                        <h3 class="text-2xl font-bold">2. Zaplanuj</h3>
-                        <p class="text-gray-600">Skontaktuj się z trenerem i umów się na pierwszą sesję treningową.</p>
+                        <h3 class="text-xl md:text-2xl font-bold">2. Zaplanuj</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Skontaktuj się z trenerem i umów się na pierwszą sesję treningową.</p>
                     </div>
                     <div class="flex flex-col items-center space-y-4">
-                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg">
+                        <div class="bg-[#F5F570] p-5 rounded-full shadow-lg transform hover:scale-110 transition-transform duration-300">
                             <i class="fas fa-dumbbell fa-3x text-[#241F20]"></i>
                         </div>
-                        <h3 class="text-2xl font-bold">3. Trenuj</h3>
-                        <p class="text-gray-600">Realizuj swój plan, osiągaj cele i ciesz się lepszą formą pod okiem eksperta.</p>
+                        <h3 class="text-xl md:text-2xl font-bold">3. Trenuj</h3>
+                        <p class="text-gray-600 text-sm md:text-base">Realizuj swój plan, osiągaj cele i ciesz się lepszą formą pod okiem eksperta.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Recommended Trainers Section -->
-            <div class="w-full py-20 bg-gray-100" v-if="premiumTrainers">
-                <div class="w-[80%] mx-auto">
-                    <h2 class="font-extrabold text-4xl text-center mb-12">Polecani Trenerzy</h2>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
+            <div class="w-full py-12 md:py-20 bg-gray-100" v-if="premiumTrainers">
+                <div class="w-[90%] md:w-[80%] max-w-7xl mx-auto">
+                    <h2 class="font-extrabold text-3xl md:text-4xl text-center mb-8 md:mb-12">Polecani Trenerzy</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
                         <Link :href="`/trainer/${trainer.uid}`" v-for="trainer in premiumTrainers" :key="trainer.uid" class="group ">
                             <div class="bg-white rounded-lg shadow-xl text-center p-6 transform group-hover:-translate-y-2 transition-transform duration-300 flex flex-col items-center h-full border-2 border-[#F5F570]">
                                 <img :src="trainer.imageURL || '/images/no_user.png'" alt="trener" class="rounded-full w-32 h-32 mx-auto border-4 border-[#F5F570] object-cover">
@@ -158,14 +159,14 @@
             </div>
 
             <!-- Why Us Section -->
-            <div class="bg-white py-20">
-                <div class="w-[80%] mx-auto flex flex-col md:flex-row items-center gap-12">
-                    <div class="md:w-1/2">
+            <div class="bg-white py-12 md:py-20">
+                <div class="w-[90%] md:w-[80%] max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-8 md:gap-12">
+                    <div class="w-full md:w-1/2">
                         <img src="../../../public/images/gym2.jpg" alt="Fitness" class="rounded-lg shadow-2xl w-full h-auto object-cover">
                     </div>
-                    <div class="md:w-1/2">
-                        <h2 class="text-4xl font-extrabold mb-6">Dlaczego Warto Nam Zaufać?</h2>
-                        <ul class="space-y-4 text-lg text-gray-600">
+                    <div class="w-full md:w-1/2">
+                        <h2 class="text-3xl md:text-4xl font-extrabold mb-4 md:mb-6">Dlaczego Warto Nam Zaufać?</h2>
+                        <ul class="space-y-4 text-base md:text-lg text-gray-600">
                             <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Najlepsi Specjaliści:</strong> Baza zweryfikowanych i doświadczonych trenerów z całej Polski.</span></li>
                             <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Elastyczność:</strong> Dopasuj treningi do swojego harmonogramu i budżetu.</span></li>
                             <li class="flex items-start"><i class="fas fa-check-circle text-yellow-500 mt-1 mr-3"></i><span><strong>Wsparcie i Motywacja:</strong> Znajdź nie tylko trenera, ale i mentora na swojej drodze do celu.</span></li>
