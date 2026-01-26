@@ -1,40 +1,71 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <title>Podgląd Planu Treningowego</title>
-    <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
     <style>
+        body {
+            font-family: 'DejaVu Sans', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            font-size: 14px;
+        }
+        .container {
+            width: 100%;
+            padding: 20px;
+        }
+        .header {
+            border-bottom: 2px solid #eee;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .header h3 {
+            margin: 0 0 5px 0;
+            font-size: 20px;
+        }
+        .header p {
+            margin: 2px 0;
+            color: #666;
+            font-size: 12px;
+        }
+        .content-box {
+            background-color: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        pre {
+            font-family: 'DejaVu Sans', sans-serif;
+            white-space: pre-wrap;
+            margin: 0;
+            color: #1f2937;
+            font-size: 14px;
+        }
         .page-break {
             page-break-after: always;
         }
-        body { font-family: DejaVu Sans, sans-serif; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body>
 
-<div class="p-4 sm:p-6 bg-gray-50 min-h-screen">
-    <div class="bg-white p-6 sm:p-8 rounded-xl shadow-lg max-w-2xl mx-auto">
-        <div class="mb-4 border-b pb-4">
-            <h3 class="font-bold text-xl text-gray-800">{{ $plan['title'] ?? 'Plan Treningowy' }}</h3>
-            <p class="text-sm text-gray-600">Data utworzenia: {{ isset($plan['created_at']) ? substr($plan['created_at'], 0, 10) : 'Brak danych' }}</p>
-            @if(isset($plan['trainerName']) && $plan['trainerName'])
-                <p class="text-sm text-gray-600">Trener: {{ $plan['trainerName'] }}</p>
-            @endif
-            @if(isset($plan['menteeName']) && $plan['menteeName'])
-                <p class="text-sm text-gray-600">Podopieczny: {{ $plan['menteeName'] }}</p>
-            @endif
-            @if(isset($plan['description']) && $plan['description'])
-                <p class="text-sm text-gray-600 mt-2"><strong>Opis:</strong> {{ $plan['description'] }}</p>
-            @endif
-        </div>
+<div class="container">
+    <div class="header">
+        <h3>{{ $plan['title'] ?? 'Plan Treningowy' }}</h3>
+        <p>Data utworzenia: {{ isset($plan['created_at']) ? substr($plan['created_at'], 0, 10) : 'Brak danych' }}</p>
+        @if(isset($plan['trainerName']) && $plan['trainerName'])
+            <p>Trener: {{ $plan['trainerName'] }}</p>
+        @endif
+        @if(isset($plan['menteeName']) && $plan['menteeName'])
+            <p>Podopieczny: {{ $plan['menteeName'] }}</p>
+        @endif
+        @if(isset($plan['description']) && $plan['description'])
+            <p style="margin-top: 10px;"><strong>Opis:</strong> {{ $plan['description'] }}</p>
+        @endif
+    </div>
 
-        <div class="space-y-6 mt-6">
-            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                <pre class="font-mono text-sm whitespace-pre-wrap text-gray-800" style="font-family: inherit;">{{ $plan['plan'] ?? '' }}</pre>
-            </div>
-        </div>
+    <div class="content-box">
+        <pre>{{ $plan['plan'] ?? '' }}</pre>
     </div>
 </div>
 
