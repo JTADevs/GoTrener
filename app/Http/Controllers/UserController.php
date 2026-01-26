@@ -8,9 +8,8 @@ use App\Repository\ChatInterface;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
-use Spatie\LaravelPdf\Facades\Pdf;
+use Barryvdh\DomPDF\Facade\Pdf;
 use App\Services\FirebaseService;
-use Spatie\Browsershot\Browsershot;
 
 class UserController extends Controller
 {
@@ -124,6 +123,7 @@ class UserController extends Controller
     public function generateTrainingPDF($id)
     {
         $training = $this->user->generateTrainingPDF($id);
+
         $training['id'] = $id;
 
         $parts = explode('_', $id);
@@ -146,12 +146,7 @@ class UserController extends Controller
             $training['status'] = 'Ukończony';
         }
 
-        return Pdf::view('training', ['training' => $training])
-            ->withBrowsershot(function (Browsershot $browsershot) {
-                $browsershot->timeout(120);
-                $browsershot->noSandbox();
-            })
-            ->download('training.pdf');
+        return Pdf::loadView('training', ['training' => $training])->download('training.pdf');
     }
 
     public function addDiet(Request $request)
@@ -167,7 +162,7 @@ class UserController extends Controller
     public function downloadDietPDF($id)
     {
         $data = $this->user->downloadDietPDF($id);
-        return Pdf::view('diet', ['diet' => $data])->download('diet.pdf');
+        return Pdf::loadView('diet', ['diet' => $data])->download('diet.pdf');
     }
 
     public function addTrainingPlan(Request $request)
@@ -184,6 +179,6 @@ class UserController extends Controller
     public function downloadTrainingPlanPDF(string $id)
     {
         $data = $this->user->downloadTrainingPlanPDF($id);
-        return Pdf::view('training_plan', ['plan' => $data])->download('training_plan.pdf');
+        return Pdf::loadView('training_plan', ['plan' => $data])->download('training_plan.pdf');
     }
 }
