@@ -93,7 +93,7 @@
                                 {{ unreadCount }}
                             </span>
                         </Link>
-                        <Link href="/profil" class="text-[#F5F570] font-bold hover:text-yellow-300 transition-colors duration-200 text-sm">Profil</Link>
+                        <Link href="/profile" class="text-[#F5F570] font-bold hover:text-yellow-300 transition-colors duration-200 text-sm">Profil</Link>
                         <Link href="/logout" class="text-[#F5F570] font-bold hover:text-yellow-300 transition-colors duration-200 text-sm">Wyloguj</Link>
                     </div>
                 </nav>
