@@ -4,8 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\TrainerController;
-use App\Http\Controllers\ChatController;
-use App\Http\Controllers\PaymentsController;
+use App\Http\Controllers\Profile\PromotionController;
+use App\Http\Controllers\Profile\ChatController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Profile\CalendarController;
 use App\Http\Middleware\EnsureUserIsLogged;
@@ -29,19 +29,25 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
         Route::post('/update', [ProfileController::class, 'update']);
         Route::put('/updateScore', [ProfileController::class, 'updateScore']);
         Route::post('/gallery', [ProfileController::class, 'gallery']);
+        Route::get('/conversations', [ChatController::class, 'getConversations'])->name('profile.conversations');
     });
 
-    Route::prefix('/profile/calendar')->group(function () {
-        Route::get('/', [CalendarController::class, 'index']);
+    Route::prefix('profile/calendar')->group(function () {
+        Route::get('/', [CalendarController::class, 'index'])->name('calendar.index');
         Route::post('/events/create', [CalendarController::class, 'createEvent']);
         Route::delete('/events/{id}/delete', [CalendarController::class, 'deleteEvent']);
     });
 
-    Route::get('/profil/communicator', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/conversations', [ChatController::class, 'getConversations']);
-    Route::get('/profile/conversations', [ProfileController::class, 'fetchConversations'])->name('profile.conversations');
-    Route::post('/chat/send', [ChatController::class, 'sendMessage']);
+    Route::prefix('profile/communicator')->group(function () {
+        Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+    });
+
+    Route::prefix('profile/promotion')->group(function () {
+        Route::get('/', [PromotionController::class, 'index'])->name('promotion.index');
+        Route::post('/', [PromotionController::class, 'promotion']);
+    });
+
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
-    Route::post('/payment/promotion', [PaymentsController::class, 'promotion']);
 });

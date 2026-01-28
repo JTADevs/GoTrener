@@ -87,7 +87,7 @@
                     </div>
                     
                     <div v-if="loggedUser.uid" class="flex items-center space-x-4 pl-2 lg:pl-4">
-                        <Link href="/profil?view=komunikator" class="relative text-gray-300 hover:text-white transition-colors duration-200">
+                        <Link href="/profile/communicator" class="relative text-gray-300 hover:text-white transition-colors duration-200">
                             <i class="fa-solid fa-comment fa-lg"></i>
                             <span v-if="unreadCount > 0" class="absolute -top-1 -right-2 bg-[#F5F570] text-[#241F20] font-bold text-xs px-1.5 py-0.5 rounded-full">
                                 {{ unreadCount }}

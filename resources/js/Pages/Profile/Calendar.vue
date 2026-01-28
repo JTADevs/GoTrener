@@ -154,10 +154,12 @@ const filteredEvents = computed(() => {
 
 const changeView = (viewName) => {
     if (viewName === 'calendar') return;
-    if (viewName === 'profil') {
+    if (viewName === 'komunikator') {
+        router.visit('/profile/communicator');
+    } else if (viewName === 'promowanie') {
+        router.visit('/profile/promotion');
+    } else if (viewName === 'profil') {
         router.visit('/profile');
-    } else {
-        router.visit(`/profile?view=${viewName}`);
     }
 };
 </script>

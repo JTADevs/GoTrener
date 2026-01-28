@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Profile;
 
 use App\Services\FirebaseService;
 use Google\Cloud\Firestore\FieldValue;

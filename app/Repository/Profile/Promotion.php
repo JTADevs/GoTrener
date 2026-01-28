@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Profile;
 
 use App\Services\FirebaseService;
 use Carbon\Carbon;
 
-class Payment implements PaymentInterface
+class Promotion implements PromotionInterface
 {
     protected $firebase;
 

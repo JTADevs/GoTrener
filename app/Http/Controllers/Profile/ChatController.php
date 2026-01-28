@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Profile;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Repository\ChatInterface;
+use App\Repository\Profile\ChatInterface;
 use App\Services\FirebaseService;
 use Google\Cloud\Firestore\FieldValue;
 use Illuminate\Support\Facades\Validator;
@@ -68,5 +69,10 @@ class ChatController extends Controller
         ]);
 
         return response()->json(['status' => 'success']);
+    }
+
+    public function getConversations()
+    {
+        return response()->json($this->chatRepository->getConversations(session('loggedUser.uid')));
     }
 }

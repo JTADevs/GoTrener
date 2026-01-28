@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Repository;
+namespace App\Repository\Profile;
 
 use App\Services\FirebaseService;
-use App\Repository\UserInterface;
+use App\Repository\Profile\UserInterface;
 use Illuminate\Support\Arr;
 
 class Chat implements ChatInterface

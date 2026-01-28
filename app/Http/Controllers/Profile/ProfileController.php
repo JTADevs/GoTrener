@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
-use App\Repository\UserInterface;
-use App\Repository\ChatInterface;
+use App\Repository\Profile\UserInterface;
+use App\Repository\Profile\ChatInterface;
 use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -26,7 +26,6 @@ class ProfileController extends Controller
         return Inertia::render('Profile/Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
             'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
-            'view' => $request->query('view'),
         ]);
     }
 

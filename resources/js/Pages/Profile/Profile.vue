@@ -2,9 +2,8 @@
     import { ref, onMounted, onUnmounted, computed } from 'vue';
     import { router, Form, useForm } from '@inertiajs/vue3';
 
-    import Communicator from '../../Components/Communicator.vue';
+
     import ProfileLayout from '../../Layouts/ProfileLayout.vue';
-    import Promotion from '../../Components/Promotion.vue';
     import SidebarNav from '../../Components/SidebarNav.vue';
 
     import { categories } from '../../Data/Categories.js';
@@ -13,10 +12,9 @@
 
     const props = defineProps({
         user: Object,
-        view: String,
     });
 
-    const activeView = ref(props.view || 'profil');
+    const activeView = ref('profil');
 
     // Profile Data Logic
     const form = useForm({
@@ -166,37 +164,26 @@
         return `${diffDays} dni`;
     };
 
-    const updateViewFromUrl = () => {
-        const params = new URLSearchParams(window.location.search);
-        const view = params.get('view');
-        if (view) {
-            activeView.value = view;
-        } else {
-            activeView.value = 'profil';
-        }
-    }
+
 
     const changeView = (viewName) => {
         if (viewName === 'calendar') {
             router.visit('/profile/calendar');
-            return;
-        }
-        activeView.value = viewName;
-        const url = new URL(window.location.href);
-        if (viewName === 'profil') {
-            url.searchParams.delete('view');
+        } else if (viewName === 'komunikator') {
+            router.visit('/profile/communicator');
+        } else if (viewName === 'promowanie') {
+            router.visit('/profile/promotion');
         } else {
-            url.searchParams.set('view', viewName);
+            activeView.value = viewName;
         }
-        window.history.pushState({}, '', url);
     };
 
     onMounted(() => {
-        window.addEventListener('popstate', updateViewFromUrl);
+        // ...
     });
 
     onUnmounted(() => {
-        window.removeEventListener('popstate', updateViewFromUrl);
+        // ...
     });
 </script>
 
@@ -316,7 +303,7 @@
                                                     </div>
                                                     
                                                     <div class="flex justify-end pt-4 border-t border-white/10 relative z-10">
-                                                        <a href="/profile?view=promowanie" @click.prevent="changeView('promowanie')" class="w-full md:w-auto px-6 py-3 bg-[#F5F570] text-[#241F20] font-bold rounded-xl shadow-lg hover:bg-[#e4e46a] transition-colors duration-200 flex items-center justify-center gap-2">
+                                                        <a href="/profile/promotion" @click.prevent="changeView('promowanie')" class="w-full md:w-auto px-6 py-3 bg-[#F5F570] text-[#241F20] font-bold rounded-xl shadow-lg hover:bg-[#e4e46a] transition-colors duration-200 flex items-center justify-center gap-2">
                                                             <span>Przedłuż pakiet</span>
                                                             <i class="fa-solid fa-arrow-right text-sm"></i>
                                                         </a>
@@ -334,7 +321,7 @@
                                                             <p class="text-gray-500 text-sm">Wyróżnij się na tle innych i zdobywaj więcej klientów.</p>
                                                         </div>
                                                     </div>
-                                                    <a href="/profile?view=promowanie" @click.prevent="changeView('promowanie')" class="w-full md:w-auto px-6 py-3 bg-[#241F20] text-[#F5F570] font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
+                                                    <a href="/profile/promotion" @click.prevent="changeView('promowanie')" class="w-full md:w-auto px-6 py-3 bg-[#241F20] text-[#F5F570] font-bold rounded-xl shadow-lg hover:bg-gray-800 transition-colors duration-200 flex items-center justify-center gap-2 whitespace-nowrap">
                                                         <span>Włącz promowanie</span>
                                                         <i class="fa-solid fa-arrow-right text-sm"></i>
                                                     </a>
@@ -530,10 +517,6 @@
                             </div>
                         </div>
 
-
-                        <!-- Other Views -->
-                        <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
-                        <Promotion v-if="activeView === 'promowanie'" :user="user"/>
                     </div>
                 </main>
             </div>
