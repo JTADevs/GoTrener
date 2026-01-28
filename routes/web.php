@@ -29,7 +29,6 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
         Route::post('/update', [ProfileController::class, 'update']);
         Route::put('/updateScore', [ProfileController::class, 'updateScore']);
         Route::post('/gallery', [ProfileController::class, 'gallery']);
-        Route::get('/conversations', [ChatController::class, 'getConversations'])->name('profile.conversations');
     });
 
     Route::prefix('profile/calendar')->group(function () {
@@ -40,6 +39,7 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
 
     Route::prefix('profile/communicator')->group(function () {
         Route::get('/', [ChatController::class, 'index'])->name('chat.index');
+        Route::get('/conversations', [ChatController::class, 'getConversations'])->name('profile.conversations');
     });
 
     Route::prefix('profile/promotion')->group(function () {

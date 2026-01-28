@@ -164,7 +164,7 @@ watch(() => props.conversations, (newVal) => {
 
 onMounted(() => {
     loading.value = true;
-    axios.get('/profile/conversations')
+    axios.get('/profile/communicator/conversations')
         .then(response => {
             localConversations.value = response.data;
             setupConversationsListeners();

@@ -1,11 +1,8 @@
 <script setup>
     import { ref, onMounted, onUnmounted, computed } from 'vue';
     import { router, Form, useForm } from '@inertiajs/vue3';
-
-
     import ProfileLayout from '../../Layouts/ProfileLayout.vue';
     import SidebarNav from '../../Components/SidebarNav.vue';
-
     import { categories } from '../../Data/Categories.js';
     import { dimensions } from '../../Data/Dimensions.js';
     import cities from '../../Data/Cities.json';
