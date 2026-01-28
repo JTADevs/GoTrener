@@ -179,7 +179,7 @@ const getDaysLeft = (dateString) => {
                 </div>
 
                 <div class="p-6 md:p-8">
-                    <Form @submit.prevent="form.post('/profil/update', { forceFormData: true })" class="space-y-8">
+                    <Form @submit.prevent="form.post('/profile/update', { forceFormData: true })" class="space-y-8">
                         
                         <!-- Profile Image -->
                         <div class="flex flex-col items-center mb-8">

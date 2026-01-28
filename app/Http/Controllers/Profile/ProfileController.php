@@ -1,17 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Profile;
 
 use App\Http\Controllers\Controller;
 use App\Repository\UserInterface;
 use App\Repository\ChatInterface;
+use App\Services\FirebaseService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Storage;
-use Barryvdh\DomPDF\Facade\Pdf;
-use App\Services\FirebaseService;
 
-class UserController extends Controller
+class ProfileController extends Controller
 {
     protected $user;
     protected $chat;
