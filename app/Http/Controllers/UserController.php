@@ -25,23 +25,15 @@ class UserController extends Controller
 
     public function dashboard(Request $request)
     {
-        if(!session('loggedUser.uid'))
-        {
-            return redirect()->route('auth')->with(['loginError'=>'Zaloguj się aby otrzymać dostęp do tego zasobu.']);
-        }
-
         if(session('loggedUser.role') == 'trainer')
         {
             $mentees = $this->chat->getMentees(session('loggedUser.uid'));
         }
 
-        return Inertia::render('Profile', [
+        return Inertia::render('Profile/Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
             'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
             'mentees' => $mentees ?? [],
-            'trainings' => $this->user->getTrainings(session('loggedUser.uid')),
-            'diets' => $this->user->getDiets(session('loggedUser.uid')),
-            'trainingPlans' => $this->user->getTrainingPlans(session('loggedUser.uid')),
             'view' => $request->query('view'),
         ]);
     }
@@ -108,77 +100,5 @@ class UserController extends Controller
     public function resetStats()
     {
         $this->user->resetStats(session('loggedUser.uid'));
-    }
-
-    public function addTraining(Request $request)
-    {
-        $this->user->addTraining($request->all());
-    }
-
-    public function cancelTraining(Request $request)
-    {
-        $this->user->cancelTraining($request->all());
-    }
-
-    public function generateTrainingPDF($id)
-    {
-        $training = $this->user->generateTrainingPDF($id);
-
-        $training['id'] = $id;
-
-        $parts = explode('_', $id);
-        if (count($parts) >= 3) {
-            $trainerUid = $parts[1];
-            $menteeUid = $parts[2];
-            $loggedUid = session('loggedUser.uid');
-
-            $otherUid = ($loggedUid === $trainerUid) ? $menteeUid : $trainerUid;
-            $otherUser = $this->user->getUserByUid($otherUid);
-
-            $roleLabel = ($loggedUid === $trainerUid) ? 'Podopieczny' : 'Trener';
-            $otherUser['roleLabel'] = $roleLabel;
-            
-            $training['otherUser'] = $otherUser;
-        }
-
-        $today = date('Y-m-d');
-        if (isset($training['status']) && $training['status'] === 'Planowany' && isset($training['date']) && $training['date'] < $today) {
-            $training['status'] = 'Ukończony';
-        }
-
-        return Pdf::loadView('training', ['training' => $training])->download('training.pdf');
-    }
-
-    public function addDiet(Request $request)
-    {
-        $this->user->addDiet($request->all());
-    }
-
-    public function deleteDiet($id)
-    {
-        $this->user->deleteDiet($id);
-    }
-
-    public function downloadDietPDF($id)
-    {
-        $data = $this->user->downloadDietPDF($id);
-        return Pdf::loadView('diet', ['diet' => $data])->download('diet.pdf');
-    }
-
-    public function addTrainingPlan(Request $request)
-    {
-        $this->user->addTrainingPlan($request->all());
-    }
-
-    public function deleteTrainingPlan(string $id)
-    {
-        $this->user->deleteTrainingPlan($id);
-        return redirect()->back();
-    }
-
-    public function downloadTrainingPlanPDF(string $id)
-    {
-        $data = $this->user->downloadTrainingPlanPDF($id);
-        return Pdf::loadView('training_plan', ['plan' => $data])->download('training_plan.pdf');
     }
 }

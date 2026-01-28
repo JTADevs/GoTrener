@@ -1,23 +1,16 @@
 <script setup>
-    import Calendar from '../Components/Calendar.vue';
-    import ProfileData from '../Components/ProfileData.vue';
-    import Stats from '../Components/Stats.vue';
-    import Communicator from '../Components/Communicator.vue';
-    import Layout from '../Layouts/Layout.vue';
     import { ref, onMounted, onUnmounted } from 'vue';
-    import Trainings from '../Components/Trainings.vue';
-    import Diet from '../Components/Diet.vue';
-    import TrainingPlans from '../Components/TrainingPlans.vue';
-    import Promotion from '../Components/Promotion.vue';
-    import Ai from '../Components/AI.vue';
+    import Calendar from '../../Components/Calendar.vue';
+    import ProfileData from '../../Components/ProfileData.vue';
+    import Stats from '../../Components/Stats.vue';
+    import Communicator from '../../Components/Communicator.vue';
+    import Layout from '../../Layouts/Layout.vue';
+    import Promotion from '../../Components/Promotion.vue';
 
     const props = defineProps({
         user: Object,
         view: String,
         mentees: Array,
-        trainings: Array,
-        diets: Array,
-        trainingPlans: Array,
     });
 
     const sidebarOpen = ref(false);
@@ -74,18 +67,6 @@
                             <i class="fa-solid fa-calendar-days w-6 text-center"></i>
                             <span class="mx-4 font-medium">Kalendarz</span>
                         </button>
-                        <button @click="changeView('treningi')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'treningi' ? 'active-link' : 'hover:bg-gray-700'">
-                            <i class="fa-solid fa-dumbbell w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Moje treningi</span>
-                        </button>
-                        <button @click="changeView('dieta')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'dieta' ? 'active-link' : 'hover:bg-gray-700'">
-                            <i class="fa-solid fa-utensils w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Moje diety</span>
-                        </button>
-                        <button @click="changeView('plan')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'plan' ? 'active-link' : 'hover:bg-gray-700'">
-                            <i class="fa-solid fa-clipboard-list w-6 text-center"></i>
-                            <span class="mx-4 font-medium">Moje plany</span>
-                        </button>
                         <button @click="changeView('komunikator')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'komunikator' ? 'active-link' : 'hover:bg-gray-700'">
                             <i class="fa-solid fa-comments w-6 text-center"></i>
                             <span class="mx-4 font-medium">Komunikator</span>
@@ -99,10 +80,6 @@
                                 <i class="fa-solid fa-bullhorn w-6 text-center"></i>
                                 <span class="mx-4 font-medium">Promowanie</span>
                             </button>
-                            <button @click="changeView('ai_plans')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer text-[#F5F570]" :class="activeView === 'ai_plans' ? 'active-link' : 'hover:bg-gray-700'">
-                                <i class="fa-solid fa-robot w-6 text-center"></i>
-                                <span class="mx-4 font-medium">Plany treningowe AI</span>
-                            </button>
                         </div>
                     </nav>
                 </aside>
@@ -112,14 +89,9 @@
                     <div class="w-full max-w-[1000px] mx-auto">
                         <ProfileData v-if="activeView === 'profil'" :user="user"/>
                         <Calendar v-if="activeView === 'calendar'" :user="user"/>
-                        <Trainings v-if="activeView === 'treningi'" :user="user" :mentees="mentees" :trainings="trainings"/>
-                        <Diet v-if="activeView === 'dieta'" :user="user" :mentees="mentees" :diets="diets"/>
-                        <TrainingPlans v-if="activeView === 'plan'" :user="user" :mentees="mentees" :trainingPlans="trainingPlans"/>
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
                         <Stats v-if="activeView === 'statystyki'" :user="user"/>
                         <Promotion v-if="activeView === 'promowanie'" :user="user"/>
-                        <Ai v-if="activeView === 'ai_plans'" :user="user"/>
-
                     </div>
                 </main>
             </div>

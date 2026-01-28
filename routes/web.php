@@ -21,7 +21,7 @@ Route::get('/trainers', [TrainerController::class, 'index']);
 Route::get('/trainer/{id}', [TrainerController::class, 'show']);
 
 Route::middleware(EnsureUserIsLogged::class)->group(function () {
-    Route::get('/profil', [UserController::class, 'dashboard'])->name('profile');
+    Route::get('/profile', [UserController::class, 'dashboard'])->name('profile');
     Route::post('/set_role', [AuthController::class, 'setRole']);
     Route::post('/profil/update', [UserController::class, 'update']);
     Route::put('/profil/updateScore', [UserController::class, 'updateScore']);
@@ -36,15 +36,6 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
     Route::get('/conversations', [ChatController::class, 'getConversations']);
     Route::get('/profile/conversations', [UserController::class, 'fetchConversations'])->name('profile.conversations');
     Route::post('/chat/send', [ChatController::class, 'sendMessage']);
-    Route::post('/addTraining', [UserController::class, 'addTraining']);
-    Route::post('/cancelTraining', [UserController::class, 'cancelTraining']);
-    Route::get('/training-downloadPDF/{id}', [UserController::class, 'generateTrainingPDF']);
-    Route::post('/addDiet', [UserController::class, 'addDiet']);
-    Route::delete('/deleteDiet/{id}', [UserController::class, 'deleteDiet']);
-    Route::get('/diet-downloadPDF/{id}', [UserController::class, 'downloadDietPDF']);
-    Route::post('/addTrainingPlan', [UserController::class, 'addTrainingPlan']);
-    Route::delete('/deleteTrainingPlan/{id}', [UserController::class, 'deleteTrainingPlan']);
-    Route::get('/training-plan-downloadPDF/{id}', [UserController::class, 'downloadTrainingPlanPDF']);
 
     Route::post('/trainer/review/{uid}', [TrainerController::class, 'submitReview']);
     Route::post('/payment/promotion', [PaymentsController::class, 'promotion']);
