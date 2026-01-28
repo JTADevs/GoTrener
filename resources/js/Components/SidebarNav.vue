@@ -40,10 +40,6 @@ const changeView = (viewName) => {
                 <i class="fa-solid fa-comments w-6 text-center"></i>
                 <span class="mx-4 font-medium">Komunikator</span>
             </button>
-            <button @click="changeView('statystyki')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer" :class="activeView === 'statystyki' ? 'active-link' : 'hover:bg-gray-700'">
-                <i class="fa-solid fa-chart-line w-6 text-center"></i>
-                <span class="mx-4 font-medium">Statystyki</span>
-            </button>
             <div v-if="user.role === 'trainer'">
                 <button @click="changeView('promowanie')" class="w-full flex items-center px-6 py-3 transition-colors duration-200 cursor-pointer text-[#F5F570]" :class="activeView === 'promowanie' ? 'active-link' : 'hover:bg-gray-700'">
                     <i class="fa-solid fa-bullhorn w-6 text-center"></i>

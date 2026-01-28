@@ -2,7 +2,6 @@
     import { ref, onMounted, onUnmounted, computed } from 'vue';
     import { router, Form, useForm } from '@inertiajs/vue3';
 
-    import Stats from '../../Components/Stats.vue';
     import Communicator from '../../Components/Communicator.vue';
     import ProfileLayout from '../../Layouts/ProfileLayout.vue';
     import Promotion from '../../Components/Promotion.vue';
@@ -15,7 +14,6 @@
     const props = defineProps({
         user: Object,
         view: String,
-        mentees: Array,
     });
 
     const activeView = ref(props.view || 'profil');
@@ -535,7 +533,6 @@
 
                         <!-- Other Views -->
                         <Communicator v-if="activeView === 'komunikator'" :currentUser="user" />
-                        <Stats v-if="activeView === 'statystyki'" :user="user"/>
                         <Promotion v-if="activeView === 'promowanie'" :user="user"/>
                     </div>
                 </main>

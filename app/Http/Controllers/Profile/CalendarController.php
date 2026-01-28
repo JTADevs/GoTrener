@@ -22,4 +22,16 @@ class CalendarController extends Controller
             'user' => $this->calendarRepository->getUser(session('loggedUser.uid'))
         ]); 
     }
+
+    public function createEvent(Request $request)
+    {
+        $this->calendarRepository->createEvent($request->all());
+        return redirect()->back();
+    }
+
+    public function deleteEvent($id)
+    {
+        $this->calendarRepository->deleteEvent($id);
+        return redirect()->back();
+    }
 }

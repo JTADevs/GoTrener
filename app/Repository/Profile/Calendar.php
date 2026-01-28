@@ -16,7 +16,7 @@ class Calendar implements CalendarInterface
         $this->firebaseApiKey = env('FIREBASE_API_KEY');
     }
     
-    public function getUser($uid)
+    public function getUser(string $uid)
     {
         $user = $this->firebase->firestore()
             ->database()
@@ -48,5 +48,34 @@ class Calendar implements CalendarInterface
         $user['personalEvents'] = $personalEvents;
 
         return $user;
+    }
+
+    public function createEvent(array $data)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->collection('personalEvents')
+            ->add([
+                'selectedDate' => $data['selectedDate'],
+                'eventTime' => $data['eventTime'],
+                'eventDescription' => $data['eventDescription'],
+                'created_at' => now(),
+            ]);
+        return true;    
+    }
+
+    public function deleteEvent(string $id)
+    {
+        $this->firebase->firestore()
+            ->database()
+            ->collection('users')
+            ->document(session('loggedUser.uid'))
+            ->collection('personalEvents')
+            ->document($id)
+            ->delete();
+
+        return true;    
     }
 }

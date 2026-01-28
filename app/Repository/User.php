@@ -178,62 +178,7 @@ class User implements UserInterface
         return true;    
     }
 
-    public function createEvent(array $data)
-    {
-        $this->firebase->firestore()
-            ->database()
-            ->collection('users')
-            ->document($data['user_id'])
-            ->collection('personalEvents')
-            ->add([
-                'selectedDate' => $data['selectedDate'],
-                'eventTime' => $data['eventTime'],
-                'eventDescription' => $data['eventDescription'],
-                'created_at' => now(),
-            ]);
-        return true;    
-    }
 
-    public function deleteEvent(string $id)
-    {
-        $deletedEventRef = $this->firebase->firestore()
-            ->database()
-            ->collection('users')
-            ->document(session('loggedUser.uid'))
-            ->collection('personalEvents')
-            ->document($id);
-        
-        $deletedEvent = $deletedEventRef->snapshot()->data();
-
-        if(!empty($deletedEvent['trainingId'])){
-            $this->firebase->firestore()->database()
-                ->collection('trainings')
-                ->document($deletedEvent['trainingId'])
-                ->set(['status' => 'Anulowany'], ['merge' => true]);
-
-            if (isset($deletedEvent['trainerUid']) && isset($deletedEvent['menteeUid'])) {
-                $otherUid = ($deletedEvent['trainerUid'] == session('loggedUser.uid')) ? $deletedEvent['menteeUid'] : $deletedEvent['trainerUid'];
-
-                if ($otherUid) {
-                    $otherUserEvents = $this->firebase->firestore()
-                        ->database()
-                        ->collection('users')
-                        ->document($otherUid)
-                        ->collection('personalEvents')
-                        ->where('trainingId', '=', $deletedEvent['trainingId'])
-                        ->documents();
-
-                    foreach ($otherUserEvents as $event) {
-                        $event->reference()->delete();
-                    }
-                }
-            }
-        }
-
-        $deletedEventRef->delete();
-
-        return true;    
-    }
 
     public function updateStats(array $data)
     {

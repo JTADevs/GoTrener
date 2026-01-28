@@ -23,15 +23,9 @@ class ProfileController extends Controller
 
     public function dashboard(Request $request)
     {
-        if(session('loggedUser.role') == 'trainer')
-        {
-            $mentees = $this->chat->getMentees(session('loggedUser.uid'));
-        }
-
         return Inertia::render('Profile/Profile', [
             'user' => $this->user->dashboard(session('loggedUser.uid')),
             'conversations' => $this->chat->getConversations(session('loggedUser.uid')),
-            'mentees' => $mentees ?? [],
             'view' => $request->query('view'),
         ]);
     }
@@ -76,18 +70,6 @@ class ProfileController extends Controller
     {
         $this->user->updateScore($request->all());
         return redirect()->route('profile');    
-    }
-
-    public function createEvent(Request $request)
-    {
-        $data = $request->all();
-        $data['user_id'] = session('loggedUser.uid');
-        $this->user->createEvent($data);
-    }
-
-    public function deleteEvent($id)
-    {
-        $this->user->deleteEvent($id);
     }
 
     public function updateStats(Request $request)

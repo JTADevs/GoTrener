@@ -31,17 +31,11 @@ Route::middleware(EnsureUserIsLogged::class)->group(function () {
         Route::post('/gallery', [ProfileController::class, 'gallery']);
     });
 
-    Route::get('/profile/calendar', [CalendarController::class, 'index']);
-    Route::post('/profil/events/create', [ProfileController::class, 'createEvent']);
-    Route::delete('/profil/events/{id}/delete', [ProfileController::class, 'deleteEvent']);
-    Route::post('/profil/updateStats', [ProfileController::class, 'updateStats']);
-    Route::post('/profil/resetStats', [ProfileController::class, 'resetStats']);
-
-    // Route::get('/profile/calendar', [CalendarController::class, 'index']);
-    // Route::post('/profil/events/create', [ProfileController::class, 'createEvent']);
-    // Route::delete('/profil/events/{id}/delete', [ProfileController::class, 'deleteEvent']);
-    // Route::post('/profil/updateStats', [ProfileController::class, 'updateStats']);
-    // Route::post('/profil/resetStats', [ProfileController::class, 'resetStats']);
+    Route::prefix('/profile/calendar')->group(function () {
+        Route::get('/', [CalendarController::class, 'index']);
+        Route::post('/events/create', [CalendarController::class, 'createEvent']);
+        Route::delete('/events/{id}/delete', [CalendarController::class, 'deleteEvent']);
+    });
 
     Route::get('/profil/communicator', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/conversations', [ChatController::class, 'getConversations']);

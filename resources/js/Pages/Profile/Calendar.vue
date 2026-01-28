@@ -132,7 +132,7 @@ const deleteForm = useForm({
 
 const confirmDelete = (eventId) => {
     if (confirm('Czy na pewno chcesz usunąć to wydarzenie?')) {
-        deleteForm.delete(`/profil/events/${eventId}/delete`);
+        deleteForm.delete(`/profile/calendar/events/${eventId}/delete`);
     }
 };
 
@@ -270,7 +270,7 @@ const changeView = (viewName) => {
                         <span class="text-2xl font-bold">&times;</span>
                     </button>
                 </div>
-                <Form @submit.prevent="form.post('/profil/events/create', {
+                <Form @submit.prevent="form.post('/profile/calendar/events/create', {
                     onSuccess: () => {
                         popupOpen = false;
                         form.reset();
